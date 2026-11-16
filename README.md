@@ -17,7 +17,7 @@ A field manual for consultants and internal programme leads who run a multi-coun
 - **Process catalogue and fit-gap tool:** rate 43 processes per country and export the core, variant and gap results as CSV.
 - **Deck kit:** 18 PowerPoint templates you can edit. They cover the programme kickoff, the discovery workshops, design review, core build showcase, wave kickoff, migration readiness, UAT kickoff, go/no-go, end-user training, hypercare and the steering committee. The plain files are in [`decks/`](decks/).
 
-The site is a single HTML page with no build step and no tracking. Checklists and fit-gap ratings are saved only in your own browser.
+The site is a single HTML page with no build step. Visits and deck downloads are counted anonymously with [GoatCounter](https://www.goatcounter.com/): no cookies and no personal data. Checklists and fit-gap ratings are saved only in your own browser.
 
 ## Disclaimer
 

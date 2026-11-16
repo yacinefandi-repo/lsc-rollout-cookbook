@@ -297,6 +297,10 @@ window.COOKBOOK = {
   deckBase: "decks/",
   /* Same files packed as JSON (base64) for hosts that cannot serve .pptx directly, such as a Claude artifact. */
   deckData: "deck-data/",
+  /* Anonymous page counts with GoatCounter (no cookies, no personal data).
+     Only runs on the public site: set the GoatCounter site code to switch it on. */
+  goatcounter: "lscworkbook",
+  analyticsHost: "yacinefandi-repo.github.io",
   deckZip: "lsc-rollout-cookbook-decks.zip",
 
   phases: [
@@ -2087,6 +2091,7 @@ window.COOKBOOK.decks = [
     });
   }
   function downloadFile(file, btn) {
+    track({ path: "download/" + file, title: "Download: " + file, event: true });
     if (btn) btn.disabled = true;
     var done = function () { if (btn) btn.disabled = false; };
     downloadsNs().then(function (dl) {
@@ -2323,11 +2328,34 @@ window.COOKBOOK.decks = [
   }
   function saveCat(st) { st.example = false; store.set("catalogue", st); }
 
+  /* ---------- anonymous page counts (GoatCounter, no cookies) ---------- */
+  var gcQueue = [];
+  function analyticsOn() { return !!C.goatcounter && location.hostname === (C.analyticsHost || ""); }
+  function track(o) {
+    if (!analyticsOn()) return;
+    try {
+      if (window.goatcounter && typeof window.goatcounter.count === "function") window.goatcounter.count(o);
+      else gcQueue.push(o);
+    } catch (e) { /* counting must never break the page */ }
+  }
+  function loadAnalytics() {
+    if (!analyticsOn()) return;
+    window.goatcounter = { no_onload: true };
+    var s = document.createElement("script");
+    s.async = true;
+    s.src = "https://gc.zgo.at/count.js";
+    s.setAttribute("data-goatcounter", "https://" + C.goatcounter + ".goatcounter.com/count");
+    s.setAttribute("data-goatcounter-settings", '{"no_onload": true}');
+    s.onload = function () { gcQueue.splice(0).forEach(function (o) { track(o); }); };
+    document.head.appendChild(s);
+  }
+
   /* ---------- footer, copy, toast ---------- */
   function footer() {
     return "<footer><p>" + h(C.checked) + ". Settings move between releases; confirm each one in your org before you rely on it.</p>" +
       "<p>Independent guide, not affiliated with or endorsed by Salesforce, Inc. or Veeva Systems Inc. Salesforce, Agentforce and Life Sciences Cloud are trademarks of Salesforce, Inc.; Veeva and Vault CRM are trademarks of Veeva Systems.</p>" +
-      '<p class="byline">Maintained by <a href="https://www.linkedin.com/in/fandiyacine/" target="_blank" rel="noopener">Yacine Fandi</a>, Salesforce Certified Agentforce Life Sciences Consultant, Administrator, Platform App Builder and Agentforce Specialist. Text and decks are licensed under <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>: reuse and adapt them, with credit.</p></footer>';
+      '<p class="byline">Maintained by <a href="https://www.linkedin.com/in/fandiyacine/" target="_blank" rel="noopener">Yacine Fandi</a>, Salesforce Certified Agentforce Life Sciences Consultant, Administrator, Platform App Builder and Agentforce Specialist. Text and decks are licensed under <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>: reuse and adapt them, with credit.</p>' +
+      (analyticsOn() ? "<p>Visits are counted anonymously with GoatCounter: no cookies, no personal data.</p>" : "") + "</footer>";
   }
   function toast(m) { var t = document.createElement("div"); t.className = "toast"; t.setAttribute("role", "status"); t.textContent = m; document.body.appendChild(t); setTimeout(function () { t.remove(); }, 2400); }
   function copy(text, what) {
@@ -2347,6 +2375,7 @@ window.COOKBOOK.decks = [
     renderNav(id);
     $("#main").innerHTML = id === "start" ? renderStart() : renderChapter(c);
     document.title = (id === "start" ? "" : c.title + " · ") + "LSC Multi-Country Rollout Cookbook";
+    track({ path: "/" + (id === "start" ? "" : id), title: document.title });
     $(".rail").classList.remove("open");
     window.scrollTo(0, 0);
   }
@@ -2428,6 +2457,7 @@ window.COOKBOOK.decks = [
     if (e.key === "Enter" && e.target.id === "new-cc") { e.preventDefault(); var b = document.querySelector('[data-act="add-country"]'); if (b) b.click(); }
   });
   window.addEventListener("hashchange", route);
+  loadAnalytics();
   route();
   downloadsNs();
 })();
