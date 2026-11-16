@@ -1,0 +1,2437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="Yacine Fandi">
+<title>LSC Multi-Country Rollout Cookbook</title>
+<meta name="description" content="A field manual for multi-country Agentforce Life Sciences (Life Sciences Cloud) for Customer Engagement rollouts and Veeva CRM migrations: phases, workshop questions, design rules and exit checklists.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=Schibsted+Grotesk:wght@600;700;800&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+/* Layout idea: a field manual. Left rail of chapters, a calm reading column, and one bold element:
+   the rollout route map on the start page. Country codes appear as small stamped chips throughout. */
+:root {
+  color-scheme: light;
+  --paper: #f1f3f5;
+  --sheet: #ffffff;
+  --ink: #0e1621;
+  --ink-2: #3b4655;
+  --ink-3: #677283;
+  --rule: #d7dce2;
+  --accent: #1f4fd1;
+  --accent-ink: #ffffff;
+  --accent-soft: #e8eefc;
+  --hover: #eaedf1;
+  --good: #11804a; --good-soft: #e3f3ea;
+  --warn: #9a5a00; --warn-soft: #fcf0dc; --warn-line: #e3a23b;
+  --bad: #b3261e; --bad-soft: #fbe6e4;
+  --muted-soft: #eceef1;
+  --font-display: "Schibsted Grotesk", "Helvetica Neue", Arial, sans-serif;
+  --font-body: "Source Sans 3", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+  --radius: 8px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --paper: #0f1318; --sheet: #171c22; --ink: #eef1f4; --ink-2: #c3cad3; --ink-3: #8e98a5; --rule: #2c333c;
+    --accent: #8ea8ff; --accent-ink: #0b1230; --accent-soft: #1d2747; --hover: #1f252d;
+    --good: #5cc98c; --good-soft: #15291e; --warn: #f0b85a; --warn-soft: #2e2413; --warn-line: #a8721d;
+    --bad: #f08c84; --bad-soft: #351b1a; --muted-soft: #222830;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --paper: #0f1318; --sheet: #171c22; --ink: #eef1f4; --ink-2: #c3cad3; --ink-3: #8e98a5; --rule: #2c333c;
+  --accent: #8ea8ff; --accent-ink: #0b1230; --accent-soft: #1d2747; --hover: #1f252d;
+  --good: #5cc98c; --good-soft: #15291e; --warn: #f0b85a; --warn-soft: #2e2413; --warn-line: #a8721d;
+  --bad: #f08c84; --bad-soft: #351b1a; --muted-soft: #222830;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { background: var(--paper); color: var(--ink); font: 17px/1.55 var(--font-body); -webkit-font-smoothing: antialiased; }
+h1, h2, h3, h4 { font-family: var(--font-display); text-wrap: balance; margin: 0; letter-spacing: -0.01em; }
+a { color: var(--accent); }
+code { font-family: var(--font-mono); font-size: 0.85em; }
+button, input, select { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* ---------- shell ---------- */
+.shell { display: grid; grid-template-columns: 276px minmax(0, 1fr); min-height: 100vh; }
+.rail { position: sticky; top: 0; height: 100vh; overflow-y: auto; border-right: 1px solid var(--rule); background: var(--sheet); padding: 22px 16px 28px; }
+.rail .brand { display: block; text-decoration: none; color: var(--ink); padding: 0 8px 16px; border-bottom: 1px solid var(--rule); margin-bottom: 14px; }
+.rail .brand b { display: block; font-family: var(--font-display); font-weight: 800; font-size: 19px; line-height: 1.15; }
+.rail .brand span { font-size: 13px; color: var(--ink-3); }
+.rail h2 { font-family: var(--font-body); font-size: 11.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--ink-3); margin: 16px 8px 6px; }
+.rail ul { list-style: none; margin: 0; padding: 0; }
+.rail a.nav { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; padding: 6px 8px; border-radius: 6px; color: var(--ink-2); text-decoration: none; font-size: 15px; line-height: 1.3; }
+.rail a.nav:hover { background: var(--hover); color: var(--ink); }
+.rail a.nav[aria-current="page"] { background: var(--accent-soft); color: var(--ink); font-weight: 600; }
+.rail a.nav.planned { color: var(--ink-3); }
+.rail .meta { font-size: 12px; color: var(--ink-3); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.rail .meta.done { color: var(--good); font-weight: 700; }
+.rail .menu-btn { display: none; }
+
+main { min-width: 0; }
+.page { max-width: 980px; margin: 0 auto; padding: 36px clamp(16px, 4vw, 48px) 64px; }
+.kicker { font-size: 13px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); }
+.page > header h1 { font-size: clamp(30px, 4.2vw, 44px); font-weight: 800; line-height: 1.08; margin: 6px 0 12px; }
+.page > header .intro { font-size: 19px; color: var(--ink-2); max-width: 68ch; margin: 0; }
+.page > header .phase-tag { display: inline-flex; gap: 8px; align-items: center; margin-top: 14px; font-size: 14px; color: var(--ink-3); }
+section.block { margin-top: 40px; }
+section.block > h2 { font-size: 24px; font-weight: 800; margin-bottom: 4px; }
+section.block > .lead { color: var(--ink-2); margin: 4px 0 14px; max-width: 70ch; }
+.block-head { display: flex; justify-content: space-between; align-items: end; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
+.btn { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--rule); background: var(--sheet); border-radius: 6px; padding: 6px 12px; font-size: 14px; font-weight: 600; cursor: pointer; line-height: 1.3; }
+.btn:hover { background: var(--hover); }
+.btn.primary { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.btn.primary:hover { opacity: 0.9; background: var(--ink); }
+.btn.small { padding: 4px 9px; font-size: 13px; }
+
+/* ---------- start page: route map ---------- */
+.hero { padding-bottom: 8px; }
+.hero h1 { font-size: clamp(34px, 5.4vw, 60px); font-weight: 800; line-height: 1.02; max-width: 15ch; margin: 8px 0 16px; }
+.hero p { font-size: 19px; color: var(--ink-2); max-width: 62ch; margin: 0 0 10px; }
+.route { margin: 34px 0 6px; background: var(--sheet); border: 1px solid var(--rule); border-radius: 12px; padding: 22px 18px 18px; overflow-x: auto; }
+.route-track { position: relative; display: grid; grid-template-columns: repeat(9, minmax(86px, 1fr)); min-width: 780px; }
+.route-track::before { content: ""; position: absolute; left: 4%; right: 4%; top: 17px; height: 4px; border-radius: 2px; background: var(--accent); opacity: 0.35; }
+.station { position: relative; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 8px; text-decoration: none; color: var(--ink); padding: 0 4px; }
+.station .dot { width: 38px; height: 38px; border-radius: 50%; background: var(--sheet); border: 3px solid var(--rule); display: grid; place-items: center; font-family: var(--font-display); font-weight: 800; font-size: 16px; z-index: 1; transition: transform 0.15s ease; }
+.station.ready .dot { border-color: var(--accent); color: var(--accent); }
+.station:hover .dot { transform: scale(1.08); }
+.station .nm { font-family: var(--font-display); font-weight: 700; font-size: 14.5px; line-height: 1.2; }
+.station .ct { font-size: 12px; color: var(--ink-3); }
+.waves { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 18px; padding-top: 14px; border-top: 1px dashed var(--rule); font-size: 14px; color: var(--ink-2); }
+.stamp { display: inline-flex; align-items: center; gap: 6px; font-family: var(--font-mono); font-size: 12.5px; font-weight: 600; letter-spacing: 0.06em; padding: 3px 8px; border: 1.5px solid currentColor; border-radius: 4px; color: var(--accent); transform: rotate(-2deg); background: var(--sheet); }
+.stamp:nth-child(2n) { transform: rotate(1.5deg); }
+.stamp.muted { color: var(--ink-3); }
+
+.phase-list { display: grid; gap: 12px; margin-top: 14px; }
+.phase { display: grid; grid-template-columns: 56px 1fr; gap: 16px; background: var(--sheet); border: 1px solid var(--rule); border-radius: var(--radius); padding: 16px 18px; scroll-margin-top: 16px; }
+.phase .num { font-family: var(--font-display); font-weight: 800; font-size: 34px; line-height: 1; color: var(--accent); }
+.phase h3 { font-size: 20px; font-weight: 800; }
+.phase .goal { margin: 4px 0 10px; color: var(--ink-2); }
+.phase .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 22px; }
+.phase h4 { font-family: var(--font-body); font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); margin: 4px 0 2px; }
+.phase ul { margin: 0; padding-left: 18px; font-size: 15.5px; }
+.phase .links { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 8px; }
+.phase .links a { font-size: 14px; font-weight: 600; text-decoration: none; padding: 3px 10px; border-radius: 999px; background: var(--accent-soft); }
+.mc { display: grid; grid-template-columns: 22px 1fr; gap: 8px; margin-top: 10px; padding: 9px 12px; border-radius: 6px; background: var(--accent-soft); font-size: 15px; color: var(--ink); }
+.mc svg { width: 18px; height: 18px; margin-top: 2px; color: var(--accent); }
+.mc b { font-weight: 700; }
+@media (max-width: 720px) { .phase .cols { grid-template-columns: 1fr; } .phase { grid-template-columns: 1fr; gap: 6px; } }
+
+.howto { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin-top: 16px; }
+.howto div { background: var(--sheet); border: 1px solid var(--rule); border-radius: var(--radius); padding: 12px 14px; font-size: 15px; color: var(--ink-2); }
+.howto b { display: block; color: var(--ink); font-family: var(--font-display); font-size: 16px; margin-bottom: 2px; }
+
+/* ---------- chapter blocks ---------- */
+.model { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+.model div { background: var(--sheet); border: 1px solid var(--rule); border-radius: 6px; padding: 6px 10px; font-size: 14px; max-width: 300px; }
+.model b { display: block; font-family: var(--font-display); font-size: 14.5px; }
+.model span { color: var(--ink-3); font-size: 13px; }
+
+.ask { display: grid; gap: 10px; }
+.q { background: var(--sheet); border: 1px solid var(--rule); border-radius: var(--radius); }
+.q summary { list-style: none; cursor: pointer; display: grid; grid-template-columns: 34px 1fr 20px; gap: 10px; align-items: start; padding: 14px 16px; }
+.q summary::-webkit-details-marker { display: none; }
+.q .qn { font-family: var(--font-display); font-weight: 800; color: var(--accent); font-size: 18px; font-variant-numeric: tabular-nums; }
+.q .qt { font-family: var(--font-display); font-weight: 700; font-size: 18px; line-height: 1.3; }
+.q .qw { display: block; font-family: var(--font-body); font-weight: 400; font-size: 15px; color: var(--ink-3); margin-top: 3px; }
+.q .chev { width: 18px; height: 18px; margin-top: 4px; color: var(--ink-3); transition: transform 0.15s ease; }
+.q[open] .chev { transform: rotate(180deg); }
+.answers { padding: 0 16px 14px 60px; display: grid; gap: 8px; }
+.ans { display: grid; grid-template-columns: minmax(170px, 0.8fr) 1.6fr; gap: 14px; padding: 10px 12px; border-radius: 6px; background: var(--paper); font-size: 15.5px; }
+.ans .if { font-weight: 700; }
+.ans .if::before { content: "If "; color: var(--ink-3); font-weight: 600; }
+.ans .then { color: var(--ink-2); }
+@media (max-width: 720px) { .answers { padding-left: 16px; } .ans { grid-template-columns: 1fr; gap: 4px; } }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
+.card { background: var(--sheet); border: 1px solid var(--rule); border-radius: var(--radius); padding: 14px 16px; }
+.card h3 { font-size: 17px; font-weight: 700; margin-bottom: 4px; }
+.card p { margin: 0; font-size: 15.5px; color: var(--ink-2); }
+
+.decision { counter-reset: d; display: grid; gap: 10px; }
+.decision .card { border-left: 4px solid var(--accent); }
+.note { margin-top: 12px; padding: 10px 14px; border-radius: 6px; background: var(--warn-soft); border-left: 4px solid var(--warn-line); font-size: 15.5px; }
+
+.steps { list-style: none; margin: 0; padding: 0; counter-reset: s; display: grid; gap: 10px; }
+.steps li { counter-increment: s; display: grid; grid-template-columns: 40px 1fr; gap: 12px; background: var(--sheet); border: 1px solid var(--rule); border-radius: var(--radius); padding: 14px 16px; }
+.steps li::before { content: counter(s); font-family: var(--font-display); font-weight: 800; font-size: 22px; color: var(--accent); line-height: 1.2; }
+.steps h3 { font-size: 17px; font-weight: 700; }
+.steps p { margin: 3px 0 0; font-size: 15.5px; color: var(--ink-2); }
+
+.table-wrap { overflow-x: auto; background: var(--sheet); border: 1px solid var(--rule); border-radius: var(--radius); }
+table { border-collapse: collapse; width: 100%; font-size: 15px; }
+th, td { text-align: left; vertical-align: top; padding: 10px 12px; border-bottom: 1px solid var(--rule); }
+th { font-family: var(--font-display); font-size: 14px; font-weight: 700; background: var(--sheet); }
+tr:last-child td { border-bottom: 0; }
+td:first-child { font-weight: 600; }
+.veeva td:first-child { font-weight: 400; color: var(--ink-2); }
+.veeva td:nth-child(2) { font-weight: 600; }
+.veeva .arrow { color: var(--ink-3); }
+
+.watch { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
+.watch li { display: grid; grid-template-columns: 22px 1fr; gap: 8px; background: var(--warn-soft); border-radius: 6px; padding: 10px 12px; font-size: 15.5px; }
+.watch svg { width: 18px; height: 18px; color: var(--warn); margin-top: 3px; }
+.tests { list-style: none; padding: 0; margin: 0; display: grid; gap: 6px; }
+.tests li { background: var(--sheet); border: 1px solid var(--rule); border-radius: 6px; padding: 9px 12px; font-size: 15.5px; }
+
+.done { list-style: none; padding: 0; margin: 0; display: grid; gap: 6px; }
+.done label { display: grid; grid-template-columns: 22px 1fr; gap: 10px; align-items: start; background: var(--sheet); border: 1px solid var(--rule); border-radius: 6px; padding: 10px 12px; cursor: pointer; font-size: 15.5px; }
+.done input { width: 18px; height: 18px; margin: 3px 0 0; accent-color: var(--good); }
+.done input:checked + span { color: var(--ink-3); text-decoration: line-through; text-decoration-color: var(--good); }
+.progress { font-size: 14px; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+
+.planned-box { margin-top: 28px; background: var(--sheet); border: 1px dashed var(--ink-3); border-radius: 12px; padding: 20px 22px; }
+.planned-box p { margin: 0 0 8px; color: var(--ink-2); }
+
+/* ---------- deck kit and download buttons ---------- */
+.btn.dl svg { width: 15px; height: 15px; flex: none; }
+.btn.dl.primary svg { color: var(--paper); }
+.btn:disabled { opacity: 0.6; cursor: progress; }
+.deck-row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.deckbar { display: flex; flex-wrap: wrap; gap: 6px 8px; align-items: center; margin-top: 18px; padding: 10px 12px; border-radius: var(--radius); background: var(--sheet); border: 1px solid var(--rule); }
+.deckbar-h { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-3); margin-right: 4px; }
+.deckbar-h svg { width: 15px; height: 15px; }
+.deckbar-sub { font-size: 13px; color: var(--ink-3); margin-left: 4px; }
+.deckbar-more { font-size: 14px; font-weight: 600; margin-left: auto; }
+.phase-decks { margin-top: 12px; }
+.phase-decks h4 { margin-bottom: 6px; }
+.kit-top { display: flex; flex-wrap: wrap; gap: 16px 32px; justify-content: space-between; align-items: start; }
+.kit-steps { margin: 8px 0 0; padding-left: 20px; color: var(--ink-2); max-width: 64ch; }
+.kit-steps li { margin: 4px 0; }
+.kit-dl { display: flex; flex-direction: column; gap: 6px; align-items: flex-start; }
+.decks { display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); gap: 12px; margin-top: 12px; }
+.deck { background: var(--sheet); border: 1px solid var(--rule); border-radius: var(--radius); padding: 14px 16px; display: flex; flex-direction: column; gap: 6px; }
+.deck-head { display: flex; justify-content: space-between; gap: 10px; align-items: start; }
+.deck h3 { font-size: 17px; font-weight: 700; }
+.deck-meta { margin: 2px 0 0; font-size: 13.5px; color: var(--ink-3); }
+.deck p { margin: 0; font-size: 15px; color: var(--ink-2); }
+.deck details summary { cursor: pointer; font-size: 14px; font-weight: 600; color: var(--accent); }
+.deck ol { margin: 6px 0 0; padding-left: 20px; font-size: 14px; color: var(--ink-2); }
+.deck-links { font-size: 13.5px !important; }
+
+/* ---------- catalogue tool ---------- */
+.legend { display: flex; flex-wrap: wrap; gap: 8px 16px; margin: 6px 0 14px; font-size: 14px; color: var(--ink-2); }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.cell { width: 34px; height: 30px; border-radius: 5px; border: 1px solid var(--rule); background: var(--sheet); font-family: var(--font-mono); font-weight: 600; font-size: 13px; cursor: pointer; display: inline-grid; place-items: center; padding: 0; }
+.cell.S { background: var(--good-soft); color: var(--good); border-color: transparent; }
+.cell.L { background: var(--warn-soft); color: var(--warn); border-color: transparent; }
+.cell.G { background: var(--bad-soft); color: var(--bad); border-color: transparent; }
+.cell.N { background: var(--muted-soft); color: var(--ink-3); border-color: transparent; }
+.cell.legend-cell { cursor: default; }
+.toolbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 12px; }
+.toolbar input, .toolbar select { border: 1px solid var(--rule); background: var(--sheet); border-radius: 6px; padding: 5px 9px; font-size: 14px; }
+.toolbar input { width: 70px; text-transform: uppercase; font-family: var(--font-mono); }
+.cat { font-size: 14.5px; }
+.cat th, .cat td { padding: 6px 8px; }
+.cat thead th { position: sticky; top: 0; z-index: 2; }
+.cat th.cc { text-align: center; min-width: 52px; }
+.cat th.cc .wv { display: block; font-family: var(--font-body); font-weight: 400; font-size: 11.5px; color: var(--ink-3); }
+.cat th.cc button { border: 0; background: none; color: var(--ink-3); cursor: pointer; font-size: 12px; padding: 0 2px; }
+.cat td.c { text-align: center; }
+.cat td.l1 { font-family: var(--font-display); font-weight: 700; white-space: nowrap; }
+.cat td.l2 { color: var(--ink-3); white-space: nowrap; font-weight: 400; }
+.cat td.l3 { font-weight: 400; min-width: 260px; }
+.cat td.res { white-space: nowrap; font-size: 13px; font-weight: 700; }
+.res.core { color: var(--good); } .res.local { color: var(--warn); } .res.gap { color: var(--bad); } .res.na { color: var(--ink-3); font-weight: 400; }
+.cat tr.grp td { border-top: 2px solid var(--rule); }
+.summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin: 16px 0; }
+.tile { background: var(--sheet); border: 1px solid var(--rule); border-radius: var(--radius); padding: 12px 14px; }
+.tile b { display: block; font-family: var(--font-display); font-size: 30px; font-weight: 800; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.tile span { font-size: 14px; color: var(--ink-2); }
+.country-fit { display: grid; gap: 6px; margin-top: 8px; }
+.cf { display: grid; grid-template-columns: 54px 1fr 120px; gap: 10px; align-items: center; font-size: 14px; }
+.bar { display: flex; height: 12px; border-radius: 4px; overflow: hidden; gap: 2px; background: var(--muted-soft); }
+.bar i { display: block; height: 100%; }
+.bar .S { background: var(--good); } .bar .L { background: var(--warn-line); } .bar .G { background: var(--bad); }
+.example-note { font-size: 14px; color: var(--warn); font-weight: 600; }
+
+/* ---------- footer, toast ---------- */
+footer { border-top: 1px solid var(--rule); margin-top: 56px; padding-top: 18px; font-size: 13.5px; color: var(--ink-3); }
+footer p { margin: 4px 0; max-width: 90ch; }
+footer .byline { color: var(--ink-2); }
+footer a { color: var(--accent); }
+.toast { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%); background: var(--ink); color: var(--paper); padding: 8px 14px; border-radius: 6px; font-size: 14px; z-index: 50; }
+.dialog-back { position: fixed; inset: 0; background: rgba(8, 12, 18, 0.5); display: grid; place-items: center; padding: 16px; z-index: 40; }
+.dialog { background: var(--sheet); border-radius: 10px; width: min(680px, 100%); padding: 18px; }
+.dialog textarea { width: 100%; min-height: 280px; font: 13px/1.5 var(--font-mono); border: 1px solid var(--rule); border-radius: 6px; padding: 8px; background: var(--paper); color: var(--ink); }
+
+@media (max-width: 960px) {
+  .shell { grid-template-columns: 1fr; }
+  .rail { position: static; height: auto; border-right: 0; border-bottom: 1px solid var(--rule); padding: 12px 16px; }
+  .rail nav { display: none; }
+  .rail.open nav { display: block; }
+  .rail .brand { border-bottom: 0; margin: 0; padding-bottom: 0; display: inline-block; }
+  .rail-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+  .rail .menu-btn { display: inline-flex; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+
+</style>
+</head>
+<body>
+<div class="shell">
+  <aside class="rail">
+    <div class="rail-top">
+      <a class="brand" href="#start"><b>LSC Rollout Cookbook</b><span>Multi-country · Veeva to LSC</span></a>
+      <button class="btn small menu-btn" data-act="menu" aria-expanded="false" aria-controls="nav">Chapters</button>
+    </div>
+    <nav id="nav" aria-label="Chapters"></nav>
+  </aside>
+  <main id="main"></main>
+</div>
+<script>
+/* LSC Rollout Cookbook: content. Written for Agentforce Life Sciences (Life Sciences Cloud) for Customer Engagement.
+   Sources: Salesforce Help (setup hub for Customer Engagement features), Trailhead, the Life Sciences developer guide,
+   and field experience of multi-country pharma CRM programmes. Verify every setting against your release. */
+window.COOKBOOK = {
+  checked: "Checked against public Salesforce documentation, November 2026 (Winter '27 cycle)",
+  /* Where the deck files live. Change this if you host the decks somewhere else (for example a GitHub release). */
+  deckBase: "decks/",
+  /* Same files packed as JSON (base64) for hosts that cannot serve .pptx directly, such as a Claude artifact. */
+  deckData: "deck-data/",
+  deckZip: "lsc-rollout-cookbook-decks.zip",
+
+  phases: [
+    { id: "p0", n: "0", name: "Mobilise", goal: "Agree why you are doing this, who decides, and how countries will be grouped into waves.",
+      outputs: ["Programme goals ranked", "Governance model and design authority", "Funding and cost-allocation model", "Draft wave plan with a pilot country"],
+      gate: ["Sponsor signs the goals", "Design authority named, with a decision rule for core versus local", "Pilot country committed (people, data, dates)"],
+      mc: "This is where multi-country programmes are won or lost. Local budgets with no central mandate produce local orgs in all but name.",
+      chapters: ["org-strategy"] },
+    { id: "p1", n: "1", name: "Org and foundation", goal: "Choose the org model, set up a clean org and the build pipeline before anyone configures features.",
+      outputs: ["Org model decision", "Licences, prerequisites and package installed", "Environment and release path (build, test, training, production)", "Naming and country-code standards"],
+      gate: ["Package installed in a sandbox and production", "Pipeline deploys core metadata end to end", "Standards published and used from the first commit"],
+      mc: "Every country inherits what you set here. Fixing naming or a territory backbone after wave 1 means migrating live data.",
+      chapters: ["foundation", "country-model"] },
+    { id: "p2", n: "2", name: "Global template design", goal: "Design one global template with the smallest set of agreed local variants.",
+      outputs: ["Process catalogue rated per country", "Core and local decision per process", "Area designs (accounts, territories, products, visits, samples, consent, medical)", "Design decisions log"],
+      gate: ["Every catalogue line has a decision", "Design review passed per area", "Gaps either accepted, scheduled or funded"],
+      mc: "Run discovery with all wave-1 countries in the room, not one by one. Separate workshops guarantee divergence.",
+      chapters: ["catalogue", "country-model", "accounts"] },
+    { id: "p3", n: "3", name: "Core build", goal: "Build the global template once, in the build environment, under source control.",
+      outputs: ["Core configuration and code in the repository", "Global reference data (products, specialties, picklists)", "Unit-tested core", "Base-language labels"],
+      gate: ["Core passes system test", "No country-specific item inside core", "Mobile metadata cache generated for core profiles"],
+      mc: "Core changes need the design authority's approval from this point on. Log every request against the catalogue line it serves.",
+      chapters: [] },
+    { id: "p4", n: "4", name: "Country localisation", goal: "Add each wave's approved local variants and translations on top of core.",
+      outputs: ["Local fields, values and settings per country", "Translations per language", "Country territory structures and product alignment", "Country consent and compliance settings"],
+      gate: ["Every local item traces to an approved variant", "Translations reviewed in the app by native speakers", "Country admin trained"],
+      mc: "Countries that share a language must agree one translation. Settle it before the translators start.",
+      chapters: ["country-model"] },
+    { id: "p5", n: "5", name: "Data and content migration", goal: "Move each country's data and approved content with keys you can reconcile.",
+      outputs: ["Load scripts per object with country-prefixed keys", "Mock loads and reconciliation reports", "Content repackaged and re-approved where needed", "Cut-over runbook"],
+      gate: ["Two clean mock loads", "Reconciliation signed by the country", "Alignment jobs produce expected PATI counts"],
+      mc: "Load country by country, never all countries in one run. One country's bad file must not block the others.",
+      chapters: ["accounts"] },
+    { id: "p6", n: "6", name: "Test", goal: "Prove core still works, then prove each country works as its users will use it.",
+      outputs: ["Core regression suite", "Country UAT scripts by persona", "Visibility and offline tests", "Performance test from the customer network"],
+      gate: ["No open critical defects", "Country UAT signed", "Users of one country cannot see another country's customers"],
+      mc: "Test data visibility across countries explicitly. It is the defect that reaches an auditor.",
+      chapters: [] },
+    { id: "p7", n: "7", name: "Wave deployment", goal: "Go live one wave at a time with a rehearsed cut-over and hypercare.",
+      outputs: ["Cut-over rehearsal", "Trained users and super users", "Hypercare rota", "Legacy freeze and decommission plan"],
+      gate: ["Go/no-go per country", "Hypercare exit criteria met", "Lessons fed back before the next wave"],
+      mc: "Keep a wave small enough to support. Two to four countries per wave is a common, manageable size.",
+      chapters: [] },
+    { id: "p8", n: "8", name: "Run", goal: "Keep core consistent while countries keep asking for change, three Salesforce releases a year.",
+      outputs: ["Change classes (standard, minor, major)", "Release calendar aligned to Salesforce releases", "Core versus local change control", "Adoption measures"],
+      gate: ["Release regression runs before each Salesforce release reaches production", "Local change requests reviewed for core reuse"],
+      mc: "Every local request is a chance to grow core. Ask which other countries need it before building it locally.",
+      chapters: [] }
+  ],
+
+  chapters: [
+    /* ------------------------------------------------------------------ */
+    {
+      id: "org-strategy", group: "Programme", title: "Programme and org strategy", phase: "p0", status: "ready",
+      kicker: "Phase 0 to 1",
+      summary: "Goals, governance, funding, one org or several, and how to cut countries into waves.",
+      intro: "A multi-country rollout is a governance project with a CRM inside it. Settle who decides and how far countries must standardise before you discuss a single field. Life Sciences Cloud for Customer Engagement starts in a new org, which gives you a rare chance to fix the org landscape you inherited.",
+      sections: [
+        { type: "ask", title: "Questions for the sponsor and country leads", items: [
+          { q: "What does the company most want from this programme?", why: "Goals decide how hard you push standardisation. Rank them; everyone says all of them.",
+            answers: [
+              { a: "One way of working and global reporting", then: "Strong core, few local variants, a central design authority with veto rights. Budget for change management in every country." },
+              { a: "Lower run cost and fewer systems", then: "Consolidate into as few orgs as the law allows and share integrations. Accept slower local change." },
+              { a: "Speed for each country", then: "Thin core (data model, keys, integrations) and wide local freedom. Expect higher run cost and weaker global reporting." }
+            ] },
+          { q: "Who has the final say when two countries want different things?", why: "Without a named decider, every difference becomes a local variant.",
+            answers: [
+              { a: "A global design authority", then: "Central template; countries propose, the authority decides. Works when headquarters also funds the programme." },
+              { a: "Regional leads", then: "Shared core plus regional templates. Plan a regional design authority and a global one above it for core items." },
+              { a: "Each country", then: "You will get independent designs. Limit core to the data model, keys and integrations, and write that down." }
+            ] },
+          { q: "Where does the money come from, and how are costs shared?", why: "Whoever pays decides. Local budgets pull towards local designs.",
+            answers: [
+              { a: "Central budget", then: "Central template is realistic. Agree a cost-allocation key (users, complexity or revenue) for the run phase." },
+              { a: "Country budgets", then: "Fund core centrally anyway, or it will never be built. Countries fund their own variants." }
+            ] },
+          { q: "Must any country's data stay in a particular region, or be separated from other affiliates?", why: "Data residency and legal separation are the strongest reasons for more than one org.",
+            answers: [
+              { a: "No residency or separation constraints", then: "Default to one global org with country separation through territories and sharing." },
+              { a: "Regional residency (for example, EU data in the EU)", then: "Choose the org's hosting region accordingly, or split into regional orgs if regions conflict. Confirm with Salesforce and your privacy office." },
+              { a: "One country needs an in-country solution (China is the usual example)", then: "Plan that country as a separate track from day one, with its own org and integrations." }
+            ] },
+          { q: "How many users, territories and countries will share the org at full scale?", why: "Platform limits apply per org. Big multi-country orgs reach them first.",
+            answers: [
+              { a: "Thousands of users and territories", then: "Check the territory limit early. LSC orgs start at 1,000 territories; Salesforce can raise it. Keep sharing rules and profiles lean." },
+              { a: "A few hundred users", then: "One org is comfortable. Spend the saved effort on governance, not architecture." }
+            ] },
+          { q: "Which systems must every country connect to: one customer master and one data warehouse, or local ones?", why: "Shared integrations are the main financial argument for a strong core.",
+            answers: [
+              { a: "Shared global systems", then: "Put integration fields, keys and reference values in core. One mapping serves every country." },
+              { a: "Local systems per country", then: "Standardise the CRM side (keys, objects, values) so each local interface maps to the same target." }
+            ] },
+          { q: "Which country goes first, and why?", why: "The pilot sets the template. A bad pilot choice bakes one country's quirks into core.",
+            answers: [
+              { a: "A representative, engaged mid-size country", then: "Good pilot. Its needs are typical, it has people to spare, and its success is persuasive." },
+              { a: "The biggest or most complex country", then: "Risky. Its exceptions become core. Use it in wave 2 once the template has settled." },
+              { a: "The country that shouts loudest", then: "Ask what it gives the programme in return: people, data and dates." }
+            ] }
+        ] },
+        { type: "compare", title: "Org models", columns: ["One global org", "Shared core, regional orgs", "Independent orgs"],
+          rows: [
+            ["When it fits", "No residency conflicts; real central governance", "Residency or scale forces several orgs; core still matters", "Truly separate businesses or forced legal separation"],
+            ["How countries are separated", "Territories, sharing and profiles", "Org per region, territories within", "Org per country or business"],
+            ["Core consistency", "Built in: one configuration", "Same core deployed from one repository to every org", "None unless you enforce it by process"],
+            ["Integration cost", "Lowest: one endpoint per system", "Medium: same mapping, several endpoints", "Highest: every org integrates separately"],
+            ["Local change speed", "Slowest: shared release train", "Medium: regional releases", "Fastest"],
+            ["Biggest risk", "Platform limits and a crowded release calendar", "Drift between orgs if the pipeline is bypassed", "Reinventing every solution; no global reporting"]
+          ],
+          note: "Most pharma companies land on one global org, with a separate track for a country whose law demands it. The shared-core model works today because core can live in source control and deploy to several orgs through one pipeline." },
+        { type: "principles", title: "Cutting countries into waves", items: [
+          { title: "Group by what the countries share", text: "Language, customer data provider, regulatory regime (sampling, consent) and sales model. Countries that share three of the four belong together." },
+          { title: "Keep waves small", text: "Two to four countries per wave keeps hypercare manageable. The first wave after the pilot should be the smallest." },
+          { title: "Leave a gap after the pilot", text: "Plan time to fold pilot lessons into core before wave 1 starts. Skipping it copies pilot defects everywhere." },
+          { title: "Respect the calendar", text: "Avoid launches, congresses, year-end and each Salesforce release weekend. Field teams will not adopt a new system during a launch." },
+          { title: "Retire legacy per wave", text: "Each wave's plan includes freezing and decommissioning the legacy system for those countries. Dual running is expensive and confuses reps." }
+        ] },
+        { type: "veeva", title: "Coming from Veeva CRM", items: [
+          { from: "Several regional or country orgs, often with a parent org pushing configuration", to: "A fresh LSC org, usually one global org", note: "Do not recreate the old org split by default. Re-test the reasons for each separation." },
+          { from: "Org-wide settings objects and messages", to: "Admin Console settings at org, profile and sometimes user level", note: "Country behaviour now follows the profile. See the country model chapter." },
+          { from: "Years of local customisations", to: "A catalogue-driven core with approved variants", note: "Rate every local customisation against the process catalogue; most do not survive the question 'which process needs it?'" }
+        ] },
+        { type: "watch", title: "Watch out", items: [
+          "Countries agreeing in workshops and diverging during build. Record each decision in the decision log with the country signatures.",
+          "A design authority that cannot say no. Give it a written rule: core changes need a business case from at least two countries or a global mandate.",
+          "Planning the technical cut-over but not the legacy contract end dates. Check notice periods for the old CRM and its data feeds.",
+          "Choosing the pilot for politics rather than fit."
+        ] },
+        { type: "done", title: "Done when", items: [
+          "Ranked programme goals signed by the sponsor",
+          "Governance charter: design authority members, decision rule, escalation path",
+          "Funding and cost-allocation model agreed",
+          "Org model chosen, with data residency confirmed by the privacy office",
+          "Wave plan with pilot, wave contents, dates and legacy retirement per wave"
+        ] }
+      ]
+    },
+
+    /* ------------------------------------------------------------------ */
+    {
+      id: "foundation", group: "Programme", title: "Foundation setup", phase: "p1", status: "ready",
+      kicker: "Phase 1",
+      summary: "Licences, prerequisites, package install, users, mobile and the Admin Console, in the order that works.",
+      intro: "Install order matters. The managed package checks prerequisites at install time, and some settings cannot be turned off later without breaking upgrades. Do the foundation once, carefully, in a sandbox first, then repeat it in production from a written runbook.",
+      sections: [
+        { type: "steps", title: "Install sequence", items: [
+          { title: "Get the licences onto a new, blank org", text: "Customer Engagement needs three things together: Agentforce Life Sciences, the Customer Engagement add-on licence and the Customer Engagement managed package.", mc: "Decide the org's hosting region before provisioning. Moving an org later is a project of its own." },
+          { title: "Give the admins the right access", text: "Assign the Health Cloud Starter and Life Sciences Commercial Admin permission sets to the people who will set up the org, then turn on Life Sciences Customer Engagement in Setup." },
+          { title: "Complete the pre-install prerequisites", text: "Set organization-wide defaults to Private for Account, Contract, Case and Opportunity. Enable Person Accounts. Build and activate the sales territory model with users assigned. Turn on Chatter, account plans, care plans and Surveys, and set the RSVP email address. Follow the current pre-install list in Salesforce Help; it changes with releases.", mc: "Build the territory backbone with country nodes now (see the country model chapter). Activating a model without them means rework later." },
+          { title: "Turn on languages and the country model", text: "Enable the Translation Workbench and every language you will need across all waves, and turn on State and Country/Territory picklists so addresses use standard codes.", mc: "Enable all languages now, even for late waves. It costs nothing and avoids touching production settings later." },
+          { title: "Install the managed package", text: "Install in a sandbox first. Skipped prerequisites make the install fail, and switching them off afterwards breaks future upgrades." },
+          { title: "Run the post-install tasks", text: "Work through Salesforce's post-install list, then the user readiness steps: profiles, users, permission sets, person account and business account record types and layouts, tabs, apps and language settings." },
+          { title: "Set up users with the least profiles you can", text: "Every field user gets Life Sciences Core plus a persona permission set (for example Field Sales Representative or Field Medical). Create profiles before users, and keep their number low.", mc: "Profiles are where country behaviour lives in the Admin Console. Design the profile matrix before creating any." },
+          { title: "Set up the mobile app", text: "Configure the object metadata cache per profile, generate it, then set application and UI settings and translations. Page or layout changes reach the iPad only after a new cache is generated for the affected profiles." },
+          { title: "Configure features in a deliberate order", text: "Start with customer data, integrations and consent. Then territories, call planning, visits and mobile. Then content and compliance, and only then advanced engagement and AI. AI recommendations built on unclean data are wasted effort." }
+        ] },
+        { type: "principles", title: "Environments and release path", items: [
+          { title: "One build source", text: "Configure core in one build sandbox only. Every other environment receives changes from the pipeline, never by hand." },
+          { title: "Name environments by purpose", text: "For example build, sit, uat, train, prod. Put the purpose in the sandbox name and the username suffix so nobody configures the wrong one." },
+          { title: "A training environment per wave", text: "Training needs stable data. Refresh it before each wave's training, and reload the training data set after each refresh." },
+          { title: "Raise limits before refreshing", text: "Limit increases (territories, API calls) agreed with Salesforce reach a sandbox only when it is created or refreshed. Ask early." },
+          { title: "Align with Salesforce releases", text: "Salesforce ships three major releases a year, and sandboxes preview them first. Schedule a regression run in every preview window." }
+        ] },
+        { type: "watch", title: "Watch out", items: [
+          "Users without a territory have limited access in the mobile app. Assign territories before the first mobile login.",
+          "The mobile app does not support the System Administrator profile. Test with real persona users.",
+          "Profile names feed the mobile metadata cache. Keep them to letters, digits, spaces, hyphens and underscores.",
+          "Changing a profile's API name later means redoing its profile-based app settings."
+        ] },
+        { type: "done", title: "Done when", items: [
+          "Package installed in a sandbox and production from the same runbook",
+          "All languages for all waves enabled",
+          "Territory model active with country nodes and users assigned",
+          "Profile matrix designed and created; persona permission sets assigned",
+          "Mobile metadata cache generated for every field profile and tested on a device"
+        ] }
+      ]
+    },
+
+    /* ------------------------------------------------------------------ */
+    {
+      id: "country-model", group: "Design", title: "The country model", phase: "p2", status: "ready",
+      kicker: "Phase 1 to 4",
+      summary: "Country codes, naming, picklists, profiles, visibility, translations and compliance variants for one org with many countries.",
+      intro: "Design rules for running many countries in one org. Each rule exists because breaking it costs the most in wave 3, when the org is live in several countries and every change touches production data.",
+      sections: [
+        { type: "principles", title: "Country codes are the backbone", items: [
+          { title: "Use ISO 3166-1 alpha-2 codes everywhere", text: "Use FR, DE, ES and so on. Never mix country names, internal codes and ISO codes. Pick a code for multi-country affiliates too (for example a cluster code) and document it." },
+          { title: "Put a country node at the top of each territory branch", text: "Global > region > country > districts > territories, with the country code at the start of every territory API name (FR_..., DE_...). Territory names then stay unique and readable in reports, alignment files and loads." },
+          { title: "Prefix external IDs with the country and source", text: "For example FR-ONEKEY-12345. Keys collide between countries surprisingly often, and a prefixed key also tells support where a record came from." },
+          { title: "Record each user's countries", text: "LSC limits account search to the countries on the user's User Additional Info (available and preferred country, as ISO codes). Fill it for every user as part of user provisioning." },
+          { title: "Stamp a country on records that territories do not cover", text: "Objects outside territory sharing need a country field filled from the user or the account, so criteria-based sharing, reports and country-only data fixes work." }
+        ] },
+        { type: "principles", title: "Naming and documentation", items: [
+          { title: "Never put a country in an API name", text: "A field built for one country is often wanted by a second one a year later, and API names cannot change once integrations use them. Put countries in the description, not the name." },
+          { title: "Mark core versus local", text: "Use one company prefix for core items and a different marker for local ones, so a schema export sorts itself. Anyone changing a core item sees at once that it needs design authority approval." },
+          { title: "Write a structured description on every custom item", text: "First line: the ISO codes of the countries using it, or GBL for global. Then the purpose, the requirement ID, and any integration or report that depends on it." },
+          { title: "Name profiles and layouts by persona, not country", text: "For example Field Sales, Field Medical, KAM. Add a country or cluster code only where a profile exists purely to carry country-specific settings." }
+        ] },
+        { type: "decision", title: "Picklists across countries", lead: "Different countries want different values in the same picklist. Choose per field, in this order:",
+          items: [
+            { title: "1. Harmonise the values", text: "One list in English with translated labels. Best for reporting and integration. Works for most fields once countries see the full list." },
+            { title: "2. A local field for a local need", text: "If only one or two countries use a field, give it its own field and show it with field-level security. Do not create record types for it." },
+            { title: "3. Record types per country", text: "Only on objects with a single purpose where values truly differ by country (time off reasons are the classic case). Each country record type adds profile and layout maintenance." },
+            { title: "4. A reference object", text: "For very long or provider-delivered lists (specialty codes, for example). A picklist tops out around 1,000 values; a lookup to a reference object does not, and data loads can maintain it." }
+          ],
+          note: "Load data with the base (English) picklist values. Loading translated values creates junk values on unrestricted picklists and errors on restricted ones. Translate in the transformation, not in Salesforce." },
+        { type: "principles", title: "Profiles and the Admin Console", items: [
+          { title: "The profile carries country behaviour", text: "Many LSC settings are hierarchical: org default, then profile, and for some (visit and email settings, for example) user. If two countries need different behaviour, they need different profiles or user-level settings." },
+          { title: "Design a profile matrix, not a profile list", text: "Rows are personas, columns are behaviour clusters (groups of countries that share settings), not individual countries. Fewer clusters means fewer profiles, caches and translations to maintain." },
+          { title: "Profile settings beat the org default and cannot be deleted in the UI", text: "Once a profile-level configuration exists, it overrides the org default for that profile. To realign it, edit it to match. Track which profiles have overrides." },
+          { title: "Each profile has a cost", text: "Every profile needs field-level security for every new field, a mobile metadata cache assignment and testing. Count that before agreeing a new one." }
+        ] },
+        { type: "principles", title: "Visibility between countries", items: [
+          { title: "Separate countries with the territory hierarchy", text: "Reps see the accounts aligned to their territories. Country admins sit at the country node; head-office users get read access through sharing on purpose, not by accident." },
+          { title: "Account alignment does not inherit downwards", text: "Aligning an account to a country node does not give it to the territories below. Align to the territories where reps work." },
+          { title: "Products and content do inherit", text: "Products aligned to a parent territory flow down to its children unless a child excludes them, and presentations can be distributed to a parent and all current and future children. Align country products and content at the country node." },
+          { title: "App alerts do not inherit", text: "An alert reaches a user only if their active territory matches an alert territory record exactly. Country-wide announcements need one record per territory, so script it." },
+          { title: "Test isolation explicitly", text: "Include a test where a user of one country searches for a customer of another. It should fail unless you meant it to succeed." }
+        ] },
+        { type: "principles", title: "Language and translation", items: [
+          { title: "English as build and base language", text: "Build, document and support in English, even for a single non-English country. Users see their language through translations." },
+          { title: "Keep a translation dictionary", text: "List every label, value and message with a flag: translate or not, and per which language. Export untranslated items, translate only what the dictionary says, import, repeat each release." },
+          { title: "One translation per language, not per country", text: "France, Belgium and Switzerland share one French. Agree terms before the translators start, and review them in the app, on the iPad, by native-speaking users." },
+          { title: "Know what does not translate", text: "Some items cannot be translated (report folder and list view names, for example). Create language-specific folders and views and share them by country." },
+          { title: "Check label lengths", text: "Translations are often longer than English and get cut off in layouts and on the iPad. Check field labels and section names on a device." },
+          { title: "Translate the mobile and AI pieces too", text: "Mobile app translations and custom labels used by components (for example the Agentforce welcome utterances) are separate from field labels." }
+        ] },
+        { type: "principles", title: "Compliance differs by country", items: [
+          { title: "Consent", text: "Opt-in rules, double opt-in and channel rules differ by country. Communication subscriptions can be filtered by territory and audience, so country rules can live at the country node." },
+          { title: "Sampling", text: "Some countries do not allow product samples or restrict them heavily. Keep sampling configuration and permissions off profiles of countries that do not sample." },
+          { title: "Licence checks", text: "LSC's licence validation (state licence, distributor licence, DEA) follows US rules. Other countries need their own design or none." },
+          { title: "Transparency reporting", text: "Transfers of value are reported differently (EFPIA disclosure in Europe, Sunshine Act in the US). If you capture visit expenses, decide per country what feeds the disclosure process." },
+          { title: "Medical and commercial separation", text: "Many countries require strict separation between sales and medical activity. Design profiles and sharing so commercial users cannot see medical inquiries or insights." }
+        ] },
+        { type: "veeva", title: "Coming from Veeva CRM", items: [
+          { from: "Country-specific settings in Veeva settings and messages, often per profile", to: "Admin Console settings at org default, profile and user level", note: "Same idea, new place. Rebuild the profile matrix from the behaviour each country actually needs." },
+          { from: "Country flags on users and records for sharing and reports", to: "User Additional Info countries, territory hierarchy with country nodes, and a country field where needed", note: "Search scope by country is standard in LSC; do not rebuild it with custom code." },
+          { from: "Products copied per country (Brand (FR), Brand (DE)) to control visibility", to: "One product record aligned to country territories", note: "Territory product alignment with inheritance replaces product copies. Merge the copies during migration." },
+          { from: "Translation through workbench export, offline messages and per-language records", to: "Workbench, custom labels and mobile translations", note: "Keep the iterative export-translate-import cycle; it still beats manual entry for many languages." }
+        ] },
+        { type: "watch", title: "Watch out", items: [
+          "A country code in a field API name. It will be wrong the day a second country uses the field.",
+          "One profile per country 'to be safe'. Twenty countries times five personas is a hundred profiles, each needing field-level security and caches.",
+          "Translations entered directly in production. Translate in the build environment and deploy, or the next deployment overwrites them.",
+          "Picklist values loaded in the local language. They look right in one country and break every global report."
+        ] },
+        { type: "done", title: "Done when", items: [
+          "Country code standard published, with cluster codes for multi-country affiliates",
+          "Territory backbone built with country nodes and prefixed names",
+          "Naming and description standard in use for every custom item",
+          "Picklist decision recorded for every field with country differences",
+          "Profile matrix (personas by behaviour cluster) approved",
+          "Translation dictionary and process in place, with reviewers named per language",
+          "Country compliance variants listed for consent, sampling, licences, transparency and medical separation"
+        ] }
+      ]
+    },
+
+    /* ------------------------------------------------------------------ */
+    {
+      id: "accounts", group: "Areas", title: "Accounts and customer data", phase: "p2", status: "ready",
+      kicker: "Area chapter",
+      summary: "HCPs, HCOs, credentials, addresses, affiliations, data change requests and search, with every question to ask per country.",
+      intro: "Almost everything in Customer Engagement depends on clean customer data. Territory alignment, sampling checks, consent and AI summaries all fail quietly on bad accounts. In a multi-country programme, the hard part is that countries manage customer data in different ways, and the design must carry all of them.",
+      model: [
+        { obj: "Account", note: "HCP as person account, HCO as business account" },
+        { obj: "Healthcare Provider", note: "What the provider is: type, class, status; one primary per account" },
+        { obj: "Healthcare Provider Specialty", note: "Links the provider to a Care Specialty" },
+        { obj: "Business License / Healthcare Provider NPI", note: "Credentials as records, not fields" },
+        { obj: "Contact Point Address / Phone / Email", note: "One record per address or channel" },
+        { obj: "Provider Affiliation", note: "Hard (workplace) or soft (influence), with role and primary flag" },
+        { obj: "Provider Account Territory Info (PATI)", note: "Per account and territory: targeting, preferred address" },
+        { obj: "Life Science Data Change Request", note: "Governed changes, internal or routed to a data provider" }
+      ],
+      sections: [
+        { type: "ask", title: "Workshop questions", items: [
+          { q: "Who owns HCP and HCO data in each country after go-live?", why: "It decides how reps create and change customers, and which countries need data stewards.",
+            answers: [
+              { a: "A data provider (for example OneKey) or a corporate MDM", then: "Reps search the provider before creating anyone. Changes to governed fields become data change requests validated externally. You need the integration, a list of governed fields and agreed turnaround times." },
+              { a: "The country manages its own data in LSC", then: "Changes are validated internally. Name data stewards, decide which fields need approval, and staff the approval queue." },
+              { a: "It differs by country", then: "Normal in pharma. Design both paths, and check early how your org will tell them apart: data change request validation types are defined per record type rather than per country, so a mixed model needs a deliberate design." }
+            ] },
+          { q: "Which customer types exist in each country?", why: "Record types drive layouts, search and data change rules. Fewer is better.",
+            answers: [
+              { a: "Prescribers and organisations (hospitals, practices, pharmacies)", then: "HCPs as person accounts and HCOs as business accounts, each with a Healthcare Provider record. Harmonise record types across countries." },
+              { a: "Doctors tracked per institution (common in Japan)", then: "Consider Institution Doctor accounts for that country only. It changes how visits, inquiries and insights are recorded, so treat it as a local variant." },
+              { a: "Non-prescribing contacts (buyers, administrators)", then: "Decide whether they are person accounts or contacts at the HCO. Do not invent a separate customer type per country." }
+            ] },
+          { q: "Which identifiers and credentials matter in each country?", why: "Credentials drive sampling eligibility and duplicate detection.",
+            answers: [
+              { a: "US NPI and state licences", then: "Use Healthcare Provider NPI and Business License records; licence validation for sampling works with them." },
+              { a: "National registry numbers in other countries", then: "Agree one global place for a national identifier with the country code alongside it, rather than one field per country. Keep the provider's own ID as the external key." },
+              { a: "No credential checks needed", then: "Do not load credentials for that country just because the object exists." }
+            ] },
+          { q: "One global specialty list, or local lists?", why: "Specialties feed segmentation, alignment rules and reports.",
+            answers: [
+              { a: "One global list with translations", then: "Load Care Specialty once, in English, translate the labels and map each provider's codes to it during integration. Best for global reporting." },
+              { a: "Local lists from local providers", then: "Keep the provider codes as a mapping table and still map to a global list for reporting. Otherwise cross-country analytics stops at specialty." }
+            ] },
+          { q: "How are addresses structured and used?", why: "Addresses drive alignment, sampling, shipping and the map.",
+            answers: [
+              { a: "Postal-code alignment (US-style)", then: "Zip alignment needs an exact postal code match on an active address that is not excluded from territory assignment." },
+              { a: "Brick or geography-group alignment (common in Europe)", then: "Brick alignment works on brick or geo-group codes. Load them with the country prefix so codes stay unique across countries." },
+              { a: "Reps need a territory-specific preferred address", then: "Use the preferred address on PATI; the primary address stays the official one." },
+              { a: "A hard affiliation should copy the HCO address to the HCP", then: "Self-managed countries usually want this; provider-managed countries usually do not, because the provider already delivers addresses. Agree the setting before the first data load." }
+            ] },
+          { q: "How far may reps search outside their territory and country?", why: "Search scope is a visibility rule. Get it wrong and reps see other countries' customers.",
+            answers: [
+              { a: "Own country only", then: "Set each user's available countries on User Additional Info. Allow search outside the territory within the country if reps align affiliated accounts themselves." },
+              { a: "Several countries (cross-border teams)", then: "Give those users several available countries and a preferred one. Test that they still cannot create duplicates." }
+            ] },
+          { q: "Who fixes duplicates?", why: "Duplicates break targeting, sample limits and consent history.",
+            answers: [
+              { a: "The data provider", then: "Use search-before-create to stop new duplicates; merge in LSC only what the provider has merged." },
+              { a: "Country data stewards", then: "Choose the merge tool by volume: the quick action for two records, the merge batch job for queues of requests." }
+            ] },
+          { q: "Which customer classifications are global, and which are local?", why: "Segments and ratings are where countries diverge most.",
+            answers: [
+              { a: "A global segmentation exists", then: "Store it in the ratings model at the right level: general on the account, product on Provider Account Product Info, territory on PATI." },
+              { a: "Each country segments differently", then: "Agree global rating types and let countries own values, or keep local ratings visible only to that country's profiles." }
+            ] }
+        ] },
+        { type: "veeva", title: "Coming from Veeva CRM", items: [
+          { from: "Account with specialty, credential and ID fields", to: "Account + Healthcare Provider + specialty, NPI and licence records", note: "Fields become records. Layouts, reports and integrations change shape, not just names." },
+          { from: "Address_vod__c with licence and DEA columns", to: "Contact Point Address + Business License", note: "Split the licence data out during transformation." },
+          { from: "Child_Account_vod__c and Affiliation_vod__c", to: "Provider Affiliation (hard or soft)", note: "Mark which relationships are workplace and which are influence; set one primary HCO per HCP." },
+          { from: "Primary_Parent_vod__c", to: "Parent organisation set by the primary hard affiliation", note: "Load affiliations, then let the batch jobs set primaries and parents." },
+          { from: "TSF_vod__c", to: "Provider Account Territory Info (PATI)", note: "Created by the alignment job. Load the territory-specific values (targeting, preferred address) after alignment." },
+          { from: "Data_Change_Request_vod__c", to: "Life Science Data Change Request with managed field definitions", note: "Close open requests before cut-over instead of migrating them." }
+        ] },
+        { type: "mclist", title: "Multi-country", items: [
+          "Expect mixed data ownership in one org: provider-managed countries and self-managed countries. Design both data change paths from the start.",
+          "Fill each user's available and preferred countries on User Additional Info so account search stays within the right countries.",
+          "Prefix external IDs with the country and source (for example DE-ONEKEY-12345) so keys never collide across countries.",
+          "Keep account record types global and show country-only fields through field-level security.",
+          "Map local specialty and identifier codes to one global list so cross-country reporting works."
+        ] },
+        { type: "steps", title: "Data migration order (per country)", items: [
+          { title: "Load as an integration user that skips trigger handlers", text: "In a live org, use an integration user with the 'Skip Life Sciences Trigger Handlers' permission, so other countries' users are unaffected. Handlers skipped this way need their batch jobs run afterwards." },
+          { title: "Accounts, then Healthcare Provider records", text: "Every account needs an active Healthcare Provider record marked primary, or it is not a valid provider and alignment skips it." },
+          { title: "Specialties, identifiers and licences", text: "Load the reference lists first (Care Specialty), then the junction and credential records." },
+          { title: "Contact point addresses, phones and emails", text: "Include the country-prefixed brick or postal codes needed for alignment." },
+          { title: "Affiliations, then the affiliation batch jobs", text: "Run AffiliationDataLoadProcessorBatch (hard or soft type and reverse records) and AccountPrimaryAffiliationBatch (primaries and parent organisation)." },
+          { title: "Territory assignments, then alignment", text: "Load manual assignments as object territory associations, then run Align Account to Territory (and the zip or brick job) to create PATI records and sharing." },
+          { title: "Territory-specific values", text: "Update PATI with targeting and preferred addresses, then reconcile counts per territory with the country." }
+        ] },
+        { type: "watch", title: "Watch out", items: [
+          "Person accounts without a Healthcare Provider record. They look fine on desktop but break provider search and alignment.",
+          "A geo alignment job that succeeds with zero accounts. Usually the job does not match the rule's geo code type (zip versus brick or geo group).",
+          "Advanced search field sets with checkbox fields. Their defaults filter results out. Use the billing country code, not the country name.",
+          "Data change request triggers do not fire for users on the integration licence, and iPad edits to governed fields wait for approval before flows run.",
+          "A profile-level account search configuration overrides the org default and cannot be deleted in the UI.",
+          "Manual assignments made on desktop do not reach the iPad until the alignment job runs."
+        ] },
+        { type: "test", title: "Test focus", items: [
+          "A rep in one country cannot find or create a customer that belongs to another country.",
+          "A new HCP created through search-before-create is aligned and visible offline immediately.",
+          "A change to a governed field creates a request routed to the right validator for that country.",
+          "Labels, picklist values and addresses read correctly in each language on the iPad.",
+          "Alignment counts per territory match the country's expected numbers after migration."
+        ] },
+        { type: "done", title: "Done when", items: [
+          "Data owner per country decided, with governed fields and approvers listed",
+          "Record types harmonised and signed off by all wave countries",
+          "Identifier, specialty and address standards documented with country codes",
+          "Search scope per persona and country agreed and configured",
+          "Migration keys (country + source + ID) agreed with the data provider and integration team",
+          "Two clean mock loads per wave country with reconciled alignment counts"
+        ] }
+      ]
+    },
+
+    /* ------------------------------------------------------------------ */
+    { id: "decks", group: "Tools", title: "Deck kit", phase: "", status: "decks", kicker: "Templates",
+      summary: "Editable PowerPoint templates for every gate: kickoff, discovery workshops, design review, wave kickoff, migration, UAT, go/no-go, training, hypercare and steering committee.",
+      intro: "Eighteen editable PowerPoint templates, one for each meeting that moves the programme through a gate. The discovery workshop decks are generated from this cookbook, so each one carries its chapter's questions, answers and multi-country rules. Replace everything in [brackets], then apply your company theme in PowerPoint: the decks use theme colours and fonts, so one change restyles every slide." },
+    { id: "catalogue", group: "Tools", title: "Process catalogue and fit-gap", phase: "p2", status: "tool", kicker: "Workshop tool",
+      summary: "Rate every process per country, see what can be core, what needs a local variant and where the gaps are." },
+
+    { id: "territories", group: "Areas", title: "Territories and alignment", phase: "p2", status: "planned", kicker: "Area chapter", summary: "Territory models, geo and affiliation alignment, product and content alignment by country." },
+    { id: "products", group: "Areas", title: "Products, messages and content", phase: "p2", status: "planned", kicker: "Area chapter", summary: "Product hierarchy, territory product alignment, presentations, approved email and content migration." },
+    { id: "visits", group: "Areas", title: "Visits and call reporting", phase: "p2", status: "planned", kicker: "Area chapter", summary: "Visit types, detailing, group and joint visits, signatures, remote meetings and expenses." },
+    { id: "samples", group: "Areas", title: "Samples", phase: "p2", status: "planned", kicker: "Area chapter", summary: "Hand-carried and direct-to-practitioner sampling, limits, inventory and licence checks." },
+    { id: "consent", group: "Areas", title: "Consent", phase: "p2", status: "planned", kicker: "Area chapter", summary: "Subscriptions, channels, product consent and country rules." },
+    { id: "medical", group: "Areas", title: "Medical", phase: "p2", status: "planned", kicker: "Area chapter", summary: "Medical inquiries, insights and medical-commercial separation." },
+    { id: "planning", group: "Areas", title: "Planning and KAM", phase: "p2", status: "planned", kicker: "Area chapter", summary: "Activity plans, calendar, account plans and next best customer." },
+    { id: "migration", group: "Programme", title: "Migration and cut-over", phase: "p5", status: "planned", kicker: "Phase 5 to 7", summary: "Keys, load order, reconciliation, freeze and go-live per wave." },
+    { id: "run", group: "Programme", title: "Run and release management", phase: "p8", status: "planned", kicker: "Phase 8", summary: "Change classes, core versus local control and the Salesforce release calendar." }
+  ],
+
+  /* Process catalogue: Level 1 > Level 2 > Level 3. Written for LSC Customer Engagement. */
+  catalogue: {
+    scale: [
+      { code: "S", label: "Standard fit", text: "Needed, and the delivered process works as is" },
+      { code: "L", label: "Local variant", text: "Needed, but this country needs a difference" },
+      { code: "G", label: "Gap", text: "Needed, and LSC does not cover it" },
+      { code: "N", label: "Not needed", text: "This country does not use the process" },
+      { code: "", label: "Not rated", text: "Still to assess" }
+    ],
+    processes: [
+      ["Customer data", "Find and create", "Search for a customer in and outside the territory"],
+      ["Customer data", "Find and create", "Create a new HCP or HCO (search before create)"],
+      ["Customer data", "Maintain", "Request a change to customer data"],
+      ["Customer data", "Maintain", "Validate and approve data change requests"],
+      ["Customer data", "Maintain", "Manage addresses and contact points"],
+      ["Customer data", "Relationships", "Maintain workplace and influence affiliations"],
+      ["Customer data", "Relationships", "View hierarchy and network of affiliations"],
+      ["Customer data", "Segment", "Rate and segment customers"],
+      ["Customer data", "Segment", "Build lists and filters"],
+      ["Territory", "Alignment", "Maintain the territory model"],
+      ["Territory", "Alignment", "Align customers by geography"],
+      ["Territory", "Alignment", "Align customers manually or by affiliation"],
+      ["Territory", "Alignment", "Align products and messages to territories"],
+      ["Territory", "Time", "Record time off territory"],
+      ["Planning", "Plans", "Run activity (cycle) plans with goals"],
+      ["Planning", "Plans", "Plan key accounts (account plans, objectives, stakeholders)"],
+      ["Planning", "Daily", "Plan the day and week in the calendar"],
+      ["Planning", "Daily", "Prepare a visit with an AI account summary"],
+      ["Planning", "Daily", "Act on next best customer and alerts"],
+      ["Engagement", "Visits", "Plan and record an individual visit"],
+      ["Engagement", "Visits", "Record products, messages and discussions"],
+      ["Engagement", "Visits", "Record group visits and attendees"],
+      ["Engagement", "Visits", "Record joint visits with a manager"],
+      ["Engagement", "Visits", "Capture HCP signatures"],
+      ["Engagement", "Visits", "Record visit expenses"],
+      ["Engagement", "Remote", "Run remote meetings"],
+      ["Engagement", "Content", "Present approved content (eDetailing)"],
+      ["Engagement", "Content", "Send approved email"],
+      ["Engagement", "Content", "Track content engagement"],
+      ["Samples", "Distribution", "Hand out samples during a visit"],
+      ["Samples", "Distribution", "Request samples shipped to the practitioner"],
+      ["Samples", "Control", "Enforce sample limits"],
+      ["Samples", "Control", "Validate licences before sampling"],
+      ["Samples", "Inventory", "Receive, transfer and count sample inventory"],
+      ["Consent", "Capture", "Capture channel consent with proof"],
+      ["Consent", "Capture", "Capture product-level consent"],
+      ["Medical", "Inquiries", "Capture and route medical inquiries"],
+      ["Medical", "Insights", "Record medical insights"],
+      ["Events", "Events", "Plan and run managed events with participants and budgets"],
+      ["Orders", "Orders", "Take orders and quotes"],
+      ["Management", "Coaching", "Coach field users"],
+      ["Management", "Reporting", "Use dashboards and reports"],
+      ["Surveys", "Surveys", "Run surveys with customers"]
+    ],
+    example: {
+      label: "Example ratings for five fictitious wave-1 markets. Replace them with your workshop results.",
+      countries: [ { code: "AA", wave: "Pilot" }, { code: "BB", wave: "Wave 1" }, { code: "CC", wave: "Wave 1" }, { code: "DD", wave: "Wave 2" }, { code: "EE", wave: "Wave 2" } ],
+      ratings: [
+        "SSSSS","SSSSS","SSLSS","SNLSS","SSSLS","SSSSS","SSSSN","LSLSL","SSSSS",
+        "SSSSS","SSSLS","SSSSS","SSSSS","LSLLS",
+        "SSSLS","SNSSN","SSSSS","SSSNS","SSNSS",
+        "SSSSS","SSSSS","SSNSS","SSSSS","SNNSS","LGNSS","SSSSN","SSSSS","SSLSS","SSSSN",
+        "SNNSN","NNNSN","SNNLN","NNNSN","SNNSN",
+        "LLLLS","SNSLS",
+        "SSSSS","SSNSS",
+        "GSNGN","NNNSG","SSLSS","SSSSS","NSNSN"
+      ]
+    }
+  }
+};
+
+</script>
+<script>
+/* LSC Rollout Cookbook: area and programme chapters (replaces the "planned" stubs). */
+(function () {
+  var C = window.COOKBOOK;
+  var chapters = [
+
+    /* ================================================================== */
+    {
+      id: "territories", group: "Areas", title: "Territories and alignment", phase: "p2", status: "ready", kicker: "Area chapter",
+      summary: "Territory models, geo, manual and affiliation alignment, product alignment and realignment, per country.",
+      intro: "In Customer Engagement, territories do more than route accounts. They decide what reps see, which products and content they get, which plans and alerts reach them, and how consent and inquiries are shared. Getting the territory design right is the best protection a multi-country org has.",
+      model: [
+        { obj: "Territory2 model and hierarchy", note: "Enterprise Territory Management; one active model" },
+        { obj: "User Territory2 Association", note: "Which users work in which territories" },
+        { obj: "Object Territory2 Association", note: "Account to territory, manual or rule-based" },
+        { obj: "Geo assignment rules", note: "Zip, brick or geo-group codes per territory" },
+        { obj: "Affiliation alignment rules", note: "Pull in accounts affiliated with covered accounts" },
+        { obj: "Provider Account Territory Info (PATI)", note: "Per account and territory values, created by alignment" },
+        { obj: "Product Territory Availability", note: "Which products and messages a territory works with" }
+      ],
+      sections: [
+        { type: "ask", title: "Workshop questions", items: [
+          { q: "How is each country's field force organised?", why: "The structure decides the alignment method, and methods can differ per country.",
+            answers: [
+              { a: "By geography (postal codes or bricks)", then: "Use geo assignment rules. US-style postal codes run the zip job; bricks and geo groups run the brick job. Load codes with the country prefix." },
+              { a: "By account lists produced by sales operations", then: "Load manual assignments as object territory associations, then run Align Account to Territory to create PATI and sharing." },
+              { a: "By specialty or customer type", then: "Model it with rules on account attributes or with Territory Planning, which supports specialty rules when the provider specialty handler is active." }
+            ] },
+          { q: "Who produces the alignment today, and how often does it change?", why: "Realignment cadence drives job schedules, data feeds and the support calendar.",
+            answers: [
+              { a: "An external alignment tool or vendor", then: "Keep it as the master. Feed its output as manual associations and run the alignment job after each load." },
+              { a: "Sales operations inside the CRM", then: "Consider Territory Planning to model and preview changes before they reach production territories." },
+              { a: "Rarely; it is mostly static", then: "Schedule alignment jobs for new accounts and address changes anyway, or new customers will be invisible to reps." }
+            ] },
+          { q: "Do several teams or reps cover the same customer?", why: "Shared coverage changes targeting, plans and visibility.",
+            answers: [
+              { a: "Yes, several teams per account", then: "One provider can sit in several territories. Each pair gets its own PATI record, so one team's targeting never overwrites another's." },
+              { a: "No, one rep per account", then: "Simpler. Keep it that way unless a team model is coming." }
+            ] },
+          { q: "Should HCPs follow the hospital or practice they work at?", why: "Affiliation alignment saves manual work but only extends existing coverage.",
+            answers: [
+              { a: "Yes", then: "Add affiliation alignment rules (account type and role). They pull in accounts affiliated with accounts already aligned; they never find accounts on their own." },
+              { a: "No", then: "Leave affiliation rules out and keep alignment purely geographic or manual." }
+            ] },
+          { q: "Which products may each territory promote?", why: "Product alignment controls what appears on the visit, in content and in plans.",
+            answers: [
+              { a: "Same portfolio per country or team", then: "Align products at the country or team node; children inherit them. Exclude a product on a child only where it must not appear." },
+              { a: "Products should also roll up to managers' territories", then: "Turn on Parent Territory Product Alignment before aligning. It is not retroactive." },
+              { a: "Alignments come from an external system", then: "Imported records land as drafts. Run the publish job to activate them and build availability for child territories." }
+            ] },
+          { q: "Who outside the field force needs to see a country's accounts?", why: "Managers, country admins and head office each need a deliberate access path.",
+            answers: [
+              { a: "Managers", then: "Place them in the parent territory of their reps' territories. Activity plan reviews and My Team views depend on it." },
+              { a: "Country admins and operations", then: "Give them the country node, or sharing rules to the country group. Keep head-office access read-only and explicit." }
+            ] },
+          { q: "What happens when accounts move between territories?", why: "Realignment changes more than account access.",
+            answers: [
+              { a: "Accounts move several times a year", then: "Plan a realignment runbook: alignment jobs, then the jobs that reshare consent records, medical inquiries and visits. PATI records without an association are deactivated." }
+            ] }
+        ] },
+        { type: "mclist", title: "Multi-country", items: [
+          "Build the hierarchy as global, region, country, then the field structure. The country node is where country admins, product alignment, content distribution and consent filters attach.",
+          "Prefix territory API names and brick or geo codes with the ISO country code. Codes collide across countries, and geo rules match codes exactly.",
+          "Countries can use different alignment methods in the same org: postal codes in one, bricks in another, manual lists in a third. Write the method per country into the design.",
+          "Admin Console territory jobs can run for a territory and its subordinates. Run alignment country by country, on each country's own schedule.",
+          "Count territories early. LSC orgs start with a limit of 1,000; a global field force can pass it. Ask Salesforce for an increase before you refresh sandboxes."
+        ] },
+        { type: "veeva", title: "Coming from Veeva CRM", items: [
+          { from: "Territory hierarchy in Veeva territory management", to: "Enterprise Territory Management (Territory2)", note: "Rebuild the model; do not copy legacy node names that lack country codes." },
+          { from: "Zip_to_Terr_vod__c, brick hierarchy", to: "Geo assignment rules (zip, brick, geo group)", note: "The rule's geo code type picks the job, not the country." },
+          { from: "Account territory loader", to: "Manual object territory associations + Align Account to Territory", note: "Same idea; the job now creates PATI and sharing." },
+          { from: "TSF_vod__c", to: "Provider Account Territory Info", note: "Load territory values after alignment has created the records." },
+          { from: "My_Setup_Products_vod__c (per user)", to: "Product Territory Availability (per territory, inherited)", note: "Product setup moves from users to territories." }
+        ] },
+        { type: "watch", title: "Watch out", items: [
+          "A geo job that succeeds with zero accounts usually ran the wrong job for the rule's geo code type.",
+          "Postal codes are text: '9' sorts after '80000'. Write range rules with care, and combine criteria into formula fields if you near the limit of 10 per rule (6 or fewer is safer).",
+          "Account alignment does not inherit between parent and child territories, but product alignment does. Explain the difference to country admins.",
+          "Manual assignments made on desktop do not reach the iPad until Align Account to Territory runs.",
+          "Archiving a territory model blanks territory references on opportunities and deletes territory forecasts. Check before archiving.",
+          "Product priority order does not inherit; it sorts the products on the visit for that territory only."
+        ] },
+        { type: "test", title: "Test focus", items: [
+          "Alignment counts per territory match the country's alignment file after every job.",
+          "A rep sees only aligned accounts, offline and online, and nothing from another country.",
+          "A realignment moves the account, its PATI values and its consent, inquiry and visit sharing.",
+          "Each territory sees exactly its products and messages on the visit page."
+        ] },
+        { type: "done", title: "Done when", items: [
+          "Territory hierarchy with country nodes designed, named and approved",
+          "Alignment method chosen per country, with data source and cadence",
+          "Product alignment design per country and team, including exclusions",
+          "Manager and country admin placement in the hierarchy agreed",
+          "Realignment runbook written, including resharing jobs",
+          "Territory count checked against the org limit at full scale"
+        ] }
+      ]
+    },
+
+    /* ================================================================== */
+    {
+      id: "products", group: "Areas", title: "Products, messages and content", phase: "p2", status: "ready", kicker: "Area chapter",
+      summary: "Product hierarchy, key messages, territory alignment, presentations, approved email and content migration.",
+      intro: "Products are reference data that every other area points at: visits, samples, plans, content, consent and restrictions. Content is where regulatory risk concentrates: every presentation and email a rep shows must be approved, current and right for the country and language.",
+      model: [
+        { obj: "Life Science Marketable Product", note: "Market, therapeutic area, brand, indication, product; hierarchy through parent product" },
+        { obj: "Product2", note: "Physical items: samples, promotional items, order items" },
+        { obj: "Product Guidance", note: "Approved product messages" },
+        { obj: "Product Territory Availability", note: "Which territories work with which products and messages" },
+        { obj: "Life Science Product Account Restriction", note: "Block detailing, sampling or ordering for one account" },
+        { obj: "Presentation, Presentation Page", note: "Approved content for the player, from PDF or HTML5 ZIP" },
+        { obj: "Life Science Email Template, fragments", note: "Approved email built from ZIP packages" }
+      ],
+      sections: [
+        { type: "ask", title: "Workshop questions", items: [
+          { q: "Do products carry the same name in every country?", why: "Trade names often differ between markets, and the answer decides how many product records you need.",
+            answers: [
+              { a: "Yes, one brand name everywhere", then: "One marketable product record, aligned to each country's territories. Translate nothing; brand names are not translated." },
+              { a: "No, trade names differ by country", then: "Create one marketable product per trade name under a shared parent (brand or therapeutic area), so global reporting rolls up through the hierarchy." }
+            ] },
+          { q: "Which physical items exist: samples, promotional items, order items?", why: "Only physical items need Product2 records, and their record type maps them to workflows.",
+            answers: [
+              { a: "Samples", then: "Create Product2 records with the sample record type under a brand-type parent, and set the default distribution quantity before sample setup." },
+              { a: "Promotional items", then: "Product2 with the promotional item record type; check per country whether gifts and items are allowed at all." },
+              { a: "None", then: "Marketable products only. Therapeutic areas and indications are never Product2." }
+            ] },
+          { q: "Are key messages global and translated, or written locally?", why: "Messages drive detailing records, reactions and next best message.",
+            answers: [
+              { a: "Global messages, translated", then: "One message per language or one per country-language pair, each with its approval and dates. Align them to territories like products." },
+              { a: "Each country writes its own", then: "Create them per country and align them at the country node. Global message reporting then needs a mapping to a global theme." }
+            ] },
+          { q: "Where does approved content come from, and how will it reach LSC?", why: "Content arrives through a manual upload or an API, and approval dates must survive the trip.",
+            answers: [
+              { a: "A regulated content system (for example Vault PromoMats or another DAM)", then: "Use the Content Management REST API for bulk loads and monitor them in the API Job Queue. Carry the approval and expiry dates into activation and deactivation dates." },
+              { a: "Agencies send files to an admin", then: "Upload New Pages works for low volumes. Write a naming and metadata checklist so admins do not improvise." }
+            ] },
+          { q: "How do you stop reps using the wrong content?", why: "Distribution decides who can access content; targeting decides which accounts it is meant for.",
+            answers: [
+              { a: "Strict control", then: "Distribute through territories and target presentations on PATI with the Restrict context. Turn off View All Records on Presentation for each profile." },
+              { a: "Guidance is enough", then: "Use Warn or recommendations; reps can still choose other approved content." }
+            ] },
+          { q: "Which languages and sending domains will approved email use?", why: "Templates are per language, and each sending domain needs verification.",
+            answers: [
+              { a: "Several countries and domains", then: "Build templates per language, verify each sending domain (DKIM or authorized domain), and have every user verify their own address." },
+              { a: "One domain", then: "Verify it once; users still verify their own return addresses." }
+            ] }
+        ] },
+        { type: "mclist", title: "Multi-country", items: [
+          "Align products and messages at the country node and let them inherit down. Product copies per country (Brand (FR), Brand (DE)) are not needed for visibility any more.",
+          "Distribute presentations to the country node and all current and future children, so new territories receive content automatically.",
+          "Keep a content register per country: language, approval number, approval date, expiry, product, territories. It is what auditors ask for, and the source for activation dates.",
+          "Plan MLR re-approval effort per country. Repackaged content may need review again even when the claims did not change.",
+          "Check country rules for promotional items and gifts before creating them; several codes restrict them heavily."
+        ] },
+        { type: "veeva", title: "Coming from Veeva CRM", items: [
+          { from: "Product_vod__c with product types", to: "Life Science Marketable Product (+ Product2 for physical items)", note: "Rebuild the hierarchy: market, therapeutic area, brand, indication, product." },
+          { from: "Key_Message_vod__c", to: "Product Guidance aligned to territories", note: "Messages now align to territories, not to users." },
+          { from: "Clm_Presentation_vod__c and slides", to: "Presentation and Presentation Page", note: "Repackage: one HTML5 ZIP per page with its own thumbnail, or a PDF where interactivity is not needed." },
+          { from: "Approved_Document_vod__c", to: "Life Science Email Template", note: "Rebuild each template as a ZIP with index.html and a thumbnail, using LSC merge variables." },
+          { from: "Products copied per country for visibility", to: "One product aligned to country territories", note: "Merge the copies during migration and remap history to the surviving product." }
+        ] },
+        { type: "watch", title: "Watch out", items: [
+          "Reps can build custom presentations only from HTML ZIP pages; pages from PDFs cannot be reused.",
+          "One HTML file with many slides inside becomes one page. Split content into one ZIP per page if pages must be mandatory or reused.",
+          "Saving a page edit deactivates the old version, and deactivation is one-way.",
+          "Click-stream records older than the retention period (at least 12 months) are deleted by a cleanup job. Keep history in Data 360 if you need it.",
+          "Standard Salesforce email templates do not work in the mobile app; use Life Science email templates.",
+          "Email fails if either the sending domain or the user's address is unverified."
+        ] },
+        { type: "test", title: "Test focus", items: [
+          "Each territory sees only its products, messages and presentations, in its language.",
+          "Content disappears on its deactivation date without anyone touching it.",
+          "Approved email renders correctly per language, honours consent and arrives from a verified domain.",
+          "Click-stream and reactions reach the visit after it is saved."
+        ] },
+        { type: "done", title: "Done when", items: [
+          "Global product hierarchy agreed, with the trade-name decision per country",
+          "Product and message alignment per country designed",
+          "Content source, load route and approval-date mapping agreed",
+          "Distribution and targeting rules decided (restrict or guide)",
+          "Email domains verified per country; templates planned per language",
+          "Content inventory and re-approval plan per wave country"
+        ] }
+      ]
+    },
+
+    /* ================================================================== */
+    {
+      id: "visits", group: "Areas", title: "Visits and call reporting", phase: "p2", status: "ready", kicker: "Area chapter",
+      summary: "Visit types, detailing, signatures, group and joint visits, remote meetings, validations and expenses.",
+      intro: "The visit is where reps spend their day, so every extra field costs adoption. In a multi-country org the temptation is to give each country its own visit layout; resist it. Agree one visit with a few country-specific fields shown through field-level security.",
+      model: [
+        { obj: "Visit + Provider Visit", note: "A one-to-one pair: the event and its life sciences details" },
+        { obj: "Provider Visit Product Detailing", note: "Products detailed, in order" },
+        { obj: "Detailing Product Message", note: "Messages delivered and the HCP's reaction" },
+        { obj: "Provider Visit Product Discussion", note: "Structured feedback per product" },
+        { obj: "Child visits", note: "One Visit and Provider Visit pair per attendee in a group visit" },
+        { obj: "Visitor", note: "Internal colleagues on a joint visit; shares the visit with them" },
+        { obj: "Compliance Statement Definition", note: "Statements and signature disclaimers" },
+        { obj: "Video Call", note: "Remote meetings through Twilio or Microsoft Teams" }
+      ],
+      sections: [
+        { type: "ask", title: "Workshop questions", items: [
+          { q: "Which kinds of visits do countries record?", why: "Channels and record types shape every visit screen.",
+            answers: [
+              { a: "Face-to-face, remote, phone, email", then: "Use the visit channel values; one record type can serve several channels." },
+              { a: "Visits that truly need different screens (store checks, events)", then: "Create record types on both Visit and Provider Visit with identical names, and turn on record type-based routing. Then every type, including standard HCP visits, needs routing mappings." },
+              { a: "Each country wants its own visit type", then: "Ask what differs. Usually a field or two; use field-level security instead of record types." }
+            ] },
+          { q: "What must a rep capture on every visit, and what is optional?", why: "Each mandatory item slows submission on the iPad.",
+            answers: [
+              { a: "Products and messages with reactions", then: "Enable detailing and message related lists on the layout; messages exist for brands, therapeutic areas and indications." },
+              { a: "Qualitative feedback per product", then: "Use product discussions with admin-defined rules (required, one per visit) per product." },
+              { a: "Next visit objectives", then: "The layout section must be named exactly 'Next Visit Objectives'; objectives carry forward to the next visit." }
+            ] },
+          { q: "When does a visit need an HCP signature?", why: "Signatures lock data and trigger compliance snapshots.",
+            answers: [
+              { a: "For samples or regulated items", then: "Configure signature settings and compliance statements; signature permanently locks place, account and record type." },
+              { a: "Never", then: "Submission still locks the visit. Decide whether submitted visits can be unlocked; it needs a handler, a setting and a quick action." }
+            ] },
+          { q: "Do managers join visits?", why: "Joint visits feed coaching and need sharing.",
+            answers: [
+              { a: "Yes", then: "Record managers as Visitor records using the life sciences visitor picker, and activate the visitor share and lock handlers." },
+              { a: "No", then: "Leave visitors off the layout." }
+            ] },
+          { q: "How will remote meetings run, and is the choice the same in every country?", why: "The provider decides what is possible remotely.",
+            answers: [
+              { a: "Twilio", then: "Reps stay in the app, HCPs join in a browser, and remote signatures and remote consent are possible." },
+              { a: "Microsoft Teams", then: "Fits companies with Teams governance. No recordings and no remote signatures." },
+              { a: "Different per country", then: "Run both with a separate visit channel per provider. The channel chosen at planning decides the provider." }
+            ] },
+          { q: "Which scheduling rules apply: visit frequency, future limits, holidays, time off?", why: "Each rule is an Admin Console value plus an active trigger handler.",
+            answers: [
+              { a: "Block repeat visits too soon", then: "Set the conflict period in days and switch the mode from Warning to Error." },
+              { a: "No visits on public holidays", then: "Create business hours and holidays, map them, and activate the holiday validation handler." }
+            ] },
+          { q: "Do reps record expenses on visits, and where do they go?", why: "Expenses feed transparency reporting and finance systems.",
+            answers: [
+              { a: "Yes, synced to Concur", then: "Use the Concur integration; expense types must be active, available for visits and within dates." },
+              { a: "Yes, for disclosure only", then: "Design per country what the disclosure process needs (EFPIA, Sunshine Act) and capture only that." }
+            ] }
+        ] },
+        { type: "mclist", title: "Multi-country", items: [
+          "Create business hours and holiday calendars per country. Holidays block scheduling only once mapped, and they also reduce activity plan working days.",
+          "Visit settings work at org, profile and user level. Put country behaviour into behaviour-cluster profiles, not one profile per country.",
+          "Keep one visit layout with country fields controlled by field-level security. Separate layouts per country multiply metadata caches and test effort.",
+          "Check that each country's language is supported by every AI feature you plan to use; some, such as the voice Visit Agent, launched in English only.",
+          "Run remote providers per country through separate channels when IT policies differ."
+        ] },
+        { type: "veeva", title: "Coming from Veeva CRM", items: [
+          { from: "Call2_vod__c", to: "Visit + Provider Visit", note: "Status moves from saved and submitted to Planned and Completed." },
+          { from: "Call2_Detail_vod__c, Call2_Key_Message_vod__c", to: "Product Detailing, Detailing Product Message (+ click stream)", note: "Reactions live on the message record; slide metrics in click-stream entries." },
+          { from: "Call2_Discussion_vod__c", to: "Product Discussion", note: "Rebuild discussion rules per product." },
+          { from: "Group calls with attendees", to: "Parent visit + child visit per attendee", note: "Each attendee's details and samples sit on their own child visit." },
+          { from: "Call objectives", to: "Next visit objectives, or KAM assessment tasks", note: "Plan-linked objectives belong to account plans." },
+          { from: "Remote_Meeting_vod__c", to: "Video Call", note: "Depends on the chosen provider." }
+        ] },
+        { type: "steps", title: "Migrating visit history", items: [
+          { title: "Agree the history window per country", text: "Two to three years is common. Archive the rest where compliance can still reach it." },
+          { title: "Turn off visit lock handling during the load", text: "Disable the visit lock handler for historical loads so completed visits can be inserted with their children." },
+          { title: "Load in dependency order", text: "Visits, then Provider Visits, then detailing, messages, discussions, disbursements and expenses; parents before child visits." },
+          { title: "Reshare after loading", text: "Run the visit sharing job so visits are shared according to current territories." }
+        ] },
+        { type: "watch", title: "Watch out", items: [
+          "Custom fields must sit on Provider Visit; custom Visit fields do not render on the web visit page.",
+          "Users with a 'Language (Region, Currency)' locale may not see fields on the desktop visit page; use 'Language (Region)'.",
+          "Field-to-field lookup filters are ignored on the visit page.",
+          "Deleting a parent visit deletes all its child visits.",
+          "The calendar shows at most 300 visits per view."
+        ] },
+        { type: "test", title: "Test focus", items: [
+          "A rep plans, records and submits each visit type online and offline, in each language.",
+          "Signature, compliance statements and locks behave per country.",
+          "Holidays and conflict rules block what they should, per country.",
+          "A joint visit appears for the manager with the right access."
+        ] },
+        { type: "done", title: "Done when", items: [
+          "Visit types, channels and record types agreed across countries",
+          "Mandatory content of a visit agreed and timed on an iPad",
+          "Signature and lock rules agreed per country",
+          "Remote provider chosen per country",
+          "Business hours and holidays defined per country",
+          "History window and migration approach agreed"
+        ] }
+      ]
+    },
+
+    /* ================================================================== */
+    {
+      id: "samples", group: "Areas", title: "Samples", phase: "p2", status: "ready", kicker: "Area chapter",
+      summary: "Hand-carried and direct-to-practitioner sampling, limits, allocations, inventory, licences and cut-over.",
+      intro: "Sampling rules differ more between countries than almost anything else, and errors here become regulatory findings. Start each country's design from its legal and code requirements, not from the system's options.",
+      model: [
+        { obj: "Product2 (sample) under a brand", note: "Samples appear in visits only under a brand-type parent" },
+        { obj: "Production Batch, Product Batch Item", note: "Lots and each rep's quantity per lot" },
+        { obj: "Location, Product Item", note: "Where stock sits and what a rep holds" },
+        { obj: "Product Disbursement", note: "Hand-carried drop during a visit" },
+        { obj: "Provider Visit Requested Sample", note: "Direct-to-practitioner request" },
+        { obj: "Territory product quantity allocation", note: "Drop or Ship allowance per product, territory and period" },
+        { obj: "Sample limit templates, Provider Sample Limit", note: "Per-HCP caps and their running balance" },
+        { obj: "Inventory Operation, Inventory Count Assessment", note: "Transfers, receipts, adjustments and counts" }
+      ],
+      sections: [
+        { type: "ask", title: "Workshop questions", items: [
+          { q: "Does the country sample at all?", why: "Several countries forbid or heavily restrict samples.",
+            answers: [
+              { a: "No", then: "Do not configure sampling for that country's profiles. Hide the sample sidebar and permissions." },
+              { a: "Yes", then: "Continue with the questions below for that country." }
+            ] },
+          { q: "Are samples hand-carried, shipped to the practitioner, or both?", why: "The distribution method decides validations and allocations.",
+            answers: [
+              { a: "Hand-carried", then: "Distribution method Drop, checked against the rep's physical inventory." },
+              { a: "Shipped (direct to practitioner)", then: "Distribution method Ship with a Ship allocation per product and territory. Without one, the allowance check is skipped." },
+              { a: "Both", then: "Drop and Ship. Configure both allocation types." }
+            ] },
+          { q: "What limits apply per HCP, and where do they come from?", why: "Legal caps need templates that block, not warn.",
+            answers: [
+              { a: "A legal cap per HCP per period", then: "Use an advanced template marked as required by law, with the right start type (for example a rolling start from the first drop). Legal templates block at the cap." },
+              { a: "A company guideline", then: "A generic or advanced template in warning mode is enough." },
+              { a: "Different limits for different HCP groups", then: "Build account segments (Healthcare Provider lists) and assign templates per segment." }
+            ] },
+          { q: "Do reps keep stock, and how is it controlled?", why: "Inventory accountability needs counts, transfers and audits.",
+            answers: [
+              { a: "Yes, reps hold stock", then: "Set up locations, product items and batch items per rep. The first count must be Initial; ad hoc, periodic and audited counts follow." },
+              { a: "No, only shipments", then: "Skip rep inventory; focus on Ship allocations and DTP requests." }
+            ] },
+          { q: "Which licence checks apply before sampling?", why: "LSC's licence validation follows US rules.",
+            answers: [
+              { a: "US: state licence, distributor licence, DEA", then: "Load Business License records with the right compliance scope and configure each licence type." },
+              { a: "Other countries", then: "Decide what proof of eligibility the country needs. Often a professional registration check at account creation is enough." }
+            ] },
+          { q: "How must batches be traceable for recalls?", why: "Recalls need the external batch number, not an internal name.",
+            answers: [
+              { a: "By the manufacturer's batch number", then: "Fill the unique identification number on each production batch. If it is blank, LSC falls back to the system name." }
+            ] }
+        ] },
+        { type: "mclist", title: "Multi-country", items: [
+          "Build sample limit templates per country (or per group of countries with the same law), and assign them through country segments.",
+          "Put allocations at the territory level per country and period; periods often follow different fiscal or legal years per country.",
+          "Keep sampling permission sets off profiles of countries that do not sample.",
+          "If the legal limit period runs across your go-live date, decide how consumption to date is carried over. Generating fresh limits resets the count."
+        ] },
+        { type: "veeva", title: "Coming from Veeva CRM", items: [
+          { from: "Sample_Lot_vod__c, lot items", to: "Production Batch + Product Batch Item", note: "Lots split into the batch and each rep's quantity per batch." },
+          { from: "Sample_Transaction_vod__c", to: "Inventory Operation + Product Transfer", note: "Receipts, transfers and adjustments become operations." },
+          { from: "Sample_Inventory_vod__c", to: "Inventory Count Assessment", note: "Load opening stock as the Initial count." },
+          { from: "Sample_Limit_vod__c", to: "Sample limit templates generating Provider Sample Limits", note: "Rebuild rules as templates; let jobs generate the limits." },
+          { from: "Call2_Sample_vod__c", to: "Product Disbursement or Requested Sample", note: "Hand-carried drops versus shipped requests." }
+        ] },
+        { type: "steps", title: "Cutting over sample accountability", items: [
+          { title: "Close the period in the old system", text: "Freeze transfers, complete counts, resolve discrepancies and reconcile with the warehouse." },
+          { title: "Load reference data", text: "Sample products, batches, locations and rep product items." },
+          { title: "Load opening balances as Initial counts", text: "Do not replay years of transactions; start each rep from a reconciled balance." },
+          { title: "Generate limits", text: "Assign templates and run the initialization job. Decide how in-period consumption carries over where legal limits span the go-live." },
+          { title: "Prove it before go-live", text: "A rep drops, transfers and counts in UAT, and the warehouse reconciles the result." }
+        ] },
+        { type: "watch", title: "Watch out", items: [
+          "A sample appears in the visit only if its parent is a brand-type marketable product and the distribution method allows it.",
+          "Inventory validation is off by default, and a blank mode behaves as Error.",
+          "Units a recipient does not accept on a transfer are credited to nobody.",
+          "Changing a template does not update existing assignment records; run the product assignment job.",
+          "Custom generic templates do not initialize new accounts automatically."
+        ] },
+        { type: "test", title: "Test focus", items: [
+          "A drop above the legal cap is blocked; a drop within it reduces the balance.",
+          "A shipment request is checked against the Ship allocation.",
+          "Transfers, receipts and counts reconcile with the warehouse.",
+          "Countries that do not sample see no sample features."
+        ] },
+        { type: "done", title: "Done when", items: [
+          "Sampling rules documented per country from legal and code requirements",
+          "Distribution methods, allocations and templates designed per country",
+          "Inventory, count and audit process agreed with the warehouse",
+          "Licence or eligibility checks agreed per country",
+          "Cut-over plan with opening balances and limit carry-over signed by compliance"
+        ] }
+      ]
+    },
+
+    /* ================================================================== */
+    {
+      id: "consent", group: "Areas", title: "Consent", phase: "p2", status: "ready", kicker: "Area chapter",
+      summary: "Subscriptions, channels, product-level consent, proof, country rules and migration of consent history.",
+      intro: "Consent belongs in the foundation phase, not at the end: approved email, remote engagement and next best actions all depend on it. Consent law differs by country, so the design must let each country's rules sit side by side in one model.",
+      model: [
+        { obj: "Communication Subscription", note: "What the HCP is consenting to receive" },
+        { obj: "Engagement Channel Type", note: "How: email, phone, SMS and so on" },
+        { obj: "Communication Subscription Channel Type", note: "Pairs a subscription with an active channel" },
+        { obj: "Data Use Purpose", note: "Links consent to a marketable product" },
+        { obj: "Communication Subscription Consent", note: "Current consent per account, channel and contact point" },
+        { obj: "Compliance snapshot", note: "A record of every save, with proof" },
+        { obj: "Consent Administration", note: "Territory filters for subscriptions, disclaimers and terms" }
+      ],
+      sections: [
+        { type: "ask", title: "Workshop questions", items: [
+          { q: "What does the law require in each country, per channel?", why: "Opt-in and opt-out regimes differ by country and channel.",
+            answers: [
+              { a: "Opt-in before any electronic contact", then: "Reps capture consent before approved email or remote invitations. Keep the 'ignore consent' options off." },
+              { a: "Opt-out is enough for some channels", then: "Model the opt-out as consent records too, so all countries report the same way." }
+            ] },
+          { q: "Is consent per channel or per product?", why: "Product-level consent needs extra configuration.",
+            answers: [
+              { a: "Per channel", then: "Subscriptions paired with channel types are enough." },
+              { a: "Per product", then: "Use a Data Use Purpose linked to the marketable product on the subscription. The channel says how, the purpose says which product." }
+            ] },
+          { q: "What proof is required?", why: "Proof settings differ between desktop and mobile.",
+            answers: [
+              { a: "HCP signature", then: "Set the signature requirement in the mobile consent proof settings; lock the screen while the HCP reviews." },
+              { a: "Confirmation email (double opt-in)", then: "Mark an email template for consent acknowledgment and send it from a trigger on consent records." },
+              { a: "Nothing beyond the record", then: "Use Optional rather than Not Required where proof might be added; Not Required removes the option." }
+            ] },
+          { q: "Which system is the source of truth for consent?", why: "Marketing, field and websites all collect consent.",
+            answers: [
+              { a: "LSC", then: "Expose consent to other channels through integration from LSC." },
+              { a: "A central consent or preference platform", then: "Integrate both ways and decide which wins on conflict. Never let two systems overwrite each other silently." }
+            ] },
+          { q: "May reps save without asking every channel?", why: "The 'Not Asked' option changes how complete consent is.",
+            answers: [
+              { a: "Yes", then: "Allow Not Asked in the org default and every profile configuration. Nothing is stored for unasked channels." },
+              { a: "No", then: "Leave it off; at least one opt-in or opt-out is needed to save anyway." }
+            ] },
+          { q: "How much consent history do you migrate?", why: "Proof of past consent may be a legal requirement.",
+            answers: [
+              { a: "Current state only", then: "Load consent records with one snapshot each, and archive the full history in the old system's export." },
+              { a: "Full audit trail", then: "Load snapshots for every historical change, with proof files. Budget for the volume." }
+            ] }
+        ] },
+        { type: "mclist", title: "Multi-country", items: [
+          "Use the territory filters in Consent Administration at the country node, so each country sees its own subscriptions, disclaimers and terms.",
+          "Write disclaimers and terms per language with each country's legal team; reuse the structure, not the text.",
+          "Have each country's privacy officer sign the consent design before build, not during UAT.",
+          "Contact points (email, phone) are shared across subscriptions; agree which country owns cleansing them."
+        ] },
+        { type: "veeva", title: "Coming from Veeva CRM", items: [
+          { from: "Multichannel_Consent_vod__c", to: "Communication Subscription Consent + compliance snapshots", note: "Consent is stored per account, channel type and contact point; every save adds a snapshot." },
+          { from: "Consent types, headers and lines", to: "Subscriptions, channel types and Data Use Purposes", note: "Configuration, not data: rebuild it." },
+          { from: "Opt-out checkboxes on Account", to: "Consent records", note: "Convert flags into consent records with a migration snapshot." }
+        ] },
+        { type: "watch", title: "Watch out", items: [
+          "A subscription appears only when paired with an active engagement channel.",
+          "An empty filter attribute list makes a subscription visible to all accounts.",
+          "Consent objects are often missing from standard permission sets; grant them explicitly.",
+          "After realignment, run the two consent resharing jobs; existing records are not reshared automatically."
+        ] },
+        { type: "test", title: "Test focus", items: [
+          "Each country sees only its subscriptions, disclaimers and terms.",
+          "Approved email is blocked without consent and allowed with it.",
+          "Proof is captured as each country requires, on iPad and desktop.",
+          "Migrated consent shows on the account with its snapshot."
+        ] },
+        { type: "done", title: "Done when", items: [
+          "Consent rules per country signed by privacy officers",
+          "Subscription, channel and product consent model built",
+          "Proof requirements set per country and surface",
+          "Source of truth and integration direction agreed",
+          "Migration scope (current state or full history) agreed"
+        ] }
+      ]
+    },
+
+    /* ================================================================== */
+    {
+      id: "medical", group: "Areas", title: "Medical", phase: "p2", status: "ready", kicker: "Area chapter",
+      summary: "Medical inquiries, routing to medical affairs, medical insights and medical-commercial separation.",
+      intro: "Medical inquiries and insights carry the strictest separation rules in the org. A rep may capture an inquiry but never answer it; medical insights must not leak into commercial targeting. Design access first, screens second.",
+      model: [
+        { obj: "Case (Medical Inquiry record type)", note: "Status ladder and routing" },
+        { obj: "Inquiry, Inquiry Question", note: "The HCP's questions, signature and preferred response channel" },
+        { obj: "Subject", note: "Tags that drive routing and insight categories" },
+        { obj: "Queue and case assignment rules", note: "Route inquiries to medical affairs" },
+        { obj: "Medical Insight", note: "Observations shared by field medical, linked to accounts and products" }
+      ],
+      sections: [
+        { type: "ask", title: "Workshop questions", items: [
+          { q: "Who answers medical inquiries in each country?", why: "The routing target decides whether LSC handles the whole lifecycle.",
+            answers: [
+              { a: "MSLs or a medical team working in LSC", then: "Use the Case-based inquiry flow: Draft, Signed, Submitted, Assigned, Responded, with queues per team." },
+              { a: "A medical information centre in another system", then: "Capture in LSC and hand off by integration at Submitted. Decide how the response status comes back." }
+            ] },
+          { q: "How must the rep attest an inquiry?", why: "Signature and disclaimer requirements vary.",
+            answers: [
+              { a: "HCP or rep signature with a disclaimer", then: "Use the Add Signature action and a compliance statement definition for the disclaimer; sign before submitting." },
+              { a: "No signature", then: "Remove the signing step from the workflow path, with compliance agreement." }
+            ] },
+          { q: "How do adverse events and product complaints reach pharmacovigilance?", why: "Reporting deadlines are legal obligations.",
+            answers: [
+              { a: "Through the inquiry flow", then: "Tag them with dedicated subjects and route them to the safety queue with alerts; test the timing." },
+              { a: "Through a separate safety intake", then: "Train reps on the separate route and keep a clear on-screen pointer to it." }
+            ] },
+          { q: "Who may see medical insights?", why: "Insights may contain sensitive or off-label topics.",
+            answers: [
+              { a: "Peers in the same territory and profile", then: "Activate the insight sharing handler; it shares new insights with same-territory, same-profile users." },
+              { a: "Wider medical teams", then: "Add public groups and sharing rules. Restrict sensitive subjects with a private subject OWD and a sharing rule to authorised users." }
+            ] }
+        ] },
+        { type: "mclist", title: "Multi-country", items: [
+          "Route by country and topic: a subject plus the account's country decides the queue. Build one queue per country medical team or per hub.",
+          "Response templates and disclaimers are per language and approved locally.",
+          "Pharmacovigilance timelines differ by country; involve each local safety officer in the safety routing test.",
+          "Insight sharing follows territory and profile; keep medical profiles separate from commercial ones in every country."
+        ] },
+        { type: "veeva", title: "Coming from Veeva CRM", items: [
+          { from: "Medical_Inquiry_vod__c", to: "Case + Inquiry + Inquiry Question", note: "Close open inquiries before cut-over where possible; migrate history for reference." },
+          { from: "Medical_Insight_vod__c", to: "Medical Insight with account and product links", note: "Tags become subjects." },
+          { from: "MSL discussions on calls", to: "Medical insights or product discussions", note: "Decide which, per use case." }
+        ] },
+        { type: "watch", title: "Watch out", items: [
+          "Case and Inquiry record types must share the same name.",
+          "The five case statuses must exist with exactly these values before you build the support process.",
+          "Set Inquiry Question sharing to Controlled by Parent, internal and external.",
+          "Run the inquiry share job after Align Account to Territory, never before.",
+          "Insight sharing is set at creation; moving territories later does not recalculate it."
+        ] },
+        { type: "test", title: "Test focus", items: [
+          "A rep captures, signs and submits; the right country queue receives it; an MSL responds.",
+          "A commercial user cannot open medical inquiries or restricted insights.",
+          "A safety-tagged inquiry reaches the safety team within the agreed time."
+        ] },
+        { type: "done", title: "Done when", items: [
+          "Answering team and routing per country agreed",
+          "Signature and disclaimer rules approved by medical and legal",
+          "Safety intake route tested per country",
+          "Insight sharing and sensitive-topic rules agreed",
+          "Medical and commercial access separation verified"
+        ] }
+      ]
+    },
+
+    /* ================================================================== */
+    {
+      id: "planning", group: "Areas", title: "Planning and KAM", phase: "p2", status: "ready", kicker: "Area chapter",
+      summary: "Activity plans and goals, calendar and time off, key account plans and next best recommendations.",
+      intro: "Planning is where countries differ in habit more than in law: cycle lengths, target-setting rituals and approval chains. Choose the activity plan type per business model, and keep KAM templates global with room for affiliate goals.",
+      model: [
+        { obj: "Time Period", note: "The plan cycle" },
+        { obj: "Provider Activity Measure Type", note: "What counts: visits, emails, channels, products" },
+        { obj: "Activity Plan, Activity Plan Territory", note: "A plan per cycle, linked to territories" },
+        { obj: "Provider Activity Goal, Goal Measure, Goal Measure Product", note: "Targets per account, activity type and product" },
+        { obj: "Account Plan, Objective, Stakeholder, Action Plan", note: "Key account management" },
+        { obj: "Goal Definition, Action Plan Template", note: "Design-time templates imported into plans" },
+        { obj: "Territory User Downtime", note: "Time off territory" },
+        { obj: "Territory Account Score, Recommended Action", note: "Next best customer and next best action" }
+      ],
+      sections: [
+        { type: "ask", title: "Workshop questions", items: [
+          { q: "How do countries set call targets?", why: "The answer picks the activity plan type.",
+            answers: [
+              { a: "A number of interactions per account and channel", then: "Account Goal plan: each activity counts once. The only type that supports in-cycle adjustment requests." },
+              { a: "Channels count differently (one visit equals two emails)", then: "Weighted Territory Goals: weights per activity type or channel-product combination. Only one weighted plan per territory." },
+              { a: "Several territories share one account target", then: "Account Goal Shared, with caps to stop over-attainment." }
+            ] },
+          { q: "Who reviews and approves targets, and how long does it take?", why: "The review flow runs on territory membership and dates.",
+            answers: [
+              { a: "Rep proposes, manager adjusts, operations approves", then: "Use the review stages with due dates and change thresholds; run the status job daily. Managers must sit in the direct parent territory." },
+              { a: "Targets come from head office", then: "Skip field review and approve directly after loading." }
+            ] },
+          { q: "How long is a cycle in each country?", why: "Cycles drive time periods, reporting and the plan calendar.",
+            answers: [
+              { a: "The same everywhere", then: "One set of time periods; clone plans each cycle." },
+              { a: "Different per country", then: "Create time periods per country cycle and plans per country territory set." }
+            ] },
+          { q: "Which accounts get key account plans, and how standard are they?", why: "KAM needs templates before plans.",
+            answers: [
+              { a: "Strategic accounts with a global method", then: "Build goal definitions (global, affiliate, territory scope) and action plan templates; publish them before migrating plans." },
+              { a: "Each country plans its own way", then: "Agree at least global goal definitions so plans can be compared." }
+            ] },
+          { q: "Where do next best customer and action recommendations come from?", why: "Recommendations are data, not configuration.",
+            answers: [
+              { a: "A Data 360 model", then: "Publish scores to territory account records and share them." },
+              { a: "An in-house model", then: "Load scores and actions by integration, with explanation data in the documented JSON format." },
+              { a: "Nothing yet", then: "Leave it until customer data is clean; AI before clean data is wasted effort." }
+            ] },
+          { q: "Which time off reasons exist per country?", why: "Time off feeds the calendar and working days.",
+            answers: [
+              { a: "Standard reasons fit", then: "Use downtime types." },
+              { a: "Country-specific reasons", then: "Add them as downtime categories, not by changing the restricted type list." }
+            ] }
+        ] },
+        { type: "mclist", title: "Multi-country", items: [
+          "Goal definitions support global, affiliate and territory scopes: a natural fit for a global strategy with country objectives.",
+          "Holidays and time off reduce working days and therefore prorated goals; load each country's holidays before the first plan.",
+          "Agree one set of activity measure types for the whole org so attainment compares across countries.",
+          "Different review calendars per country are fine; different plan types per country make global reporting hard."
+        ] },
+        { type: "veeva", title: "Coming from Veeva CRM", items: [
+          { from: "MC_Cycle_vod__c", to: "Time Period", note: "Rebuild for the first live cycle." },
+          { from: "MC_Cycle_Plan_vod__c and targets", to: "Activity Plan + Provider Activity Goals", note: "Choose the plan type; do not migrate closed cycles." },
+          { from: "Cycle plan channels and products", to: "Goal measures and goal measure products", note: "Channels become measure types." },
+          { from: "Account_Plan_vod__c, tactics", to: "Account Plan, Objectives, Action Plans", note: "Publish templates first, then migrate open plans." },
+          { from: "Time_Off_Territory_vod__c", to: "Territory User Downtime", note: "Map reasons to types or categories." },
+          { from: "Call cycle entries", to: "Calendar routines", note: "Recreate rather than migrate." }
+        ] },
+        { type: "watch", title: "Watch out", items: [
+          "Only one active Account Goal plan per territory at a time.",
+          "Progress is not live: a job recalculates it hourly.",
+          "Status automation stops at Submitted; approval is manual.",
+          "An approved plan with a future start date stays inactive until that date.",
+          "HCP accounts need an active primary specialty for activity plans.",
+          "KAM plans can be viewed and edited offline, but not created."
+        ] },
+        { type: "test", title: "Test focus", items: [
+          "A visit submitted against a goal updates attainment after the job runs.",
+          "Review roles work for rep and manager in each country's hierarchy.",
+          "Holidays and time off change working days as expected.",
+          "KAM templates import into plans with the right goals and actions."
+        ] },
+        { type: "done", title: "Done when", items: [
+          "Plan type chosen per business model, with measure types agreed globally",
+          "Review flow, dates and thresholds agreed per country",
+          "Time periods and holidays defined for each wave",
+          "KAM goal definitions and templates published",
+          "Recommendation source decided, or deliberately postponed"
+        ] }
+      ]
+    },
+
+    /* ================================================================== */
+    {
+      id: "migration", group: "Programme", title: "Migration and cut-over", phase: "p5", status: "ready", kicker: "Phase 5 to 7",
+      summary: "Keys, load order across all areas, mock loads, reconciliation, testing a wave, freeze, go/no-go and hypercare.",
+      intro: "Migration is a country-by-country activity in a multi-country programme, repeated for every wave. Build it as a reusable kit: the same scripts, the same order and the same reconciliation, run with each country's files.",
+      sections: [
+        { type: "principles", title: "Principles", items: [
+          { title: "Keys first", text: "Every migrated record carries its source ID with the country and source prefix, in a unique external ID field. Loads must be repeatable and reconcilable." },
+          { title: "Settings are re-decided, not migrated", text: "Old settings and messages tell you what the business wanted; the new values are decided in design and deployed as metadata." },
+          { title: "Close in-flight items", text: "Saved but unsubmitted visits, open data change requests, open inquiries and unreconciled samples are closed before the freeze, not migrated half-done." },
+          { title: "Load as an integration user", text: "In a live org, use an integration user with 'Skip Life Sciences Trigger Handlers' so other countries are unaffected, then run the batch jobs that replace the skipped handlers." },
+          { title: "Two clean mock loads", text: "Rehearse with production-volume data twice; time each step to build the cut-over plan." },
+          { title: "One country per run", text: "Load each country separately. One country's bad file must not block the others." }
+        ] },
+        { type: "steps", title: "Master load order", items: [
+          { title: "Reference data", text: "Time periods, care specialties, product hierarchy and Product2, product messages, the territory model and users. Settings arrive by deployment, not by load." },
+          { title: "Customers", text: "Accounts, Healthcare Provider records, specialties, identifiers, licences and contact points." },
+          { title: "Affiliations", text: "Load affiliations, then run the affiliation data load and primary affiliation batch jobs." },
+          { title: "Alignment", text: "Load manual assignments, run Align Account to Territory and the geo jobs, then update PATI values (targeting, preferred address)." },
+          { title: "Products to territories", text: "Load product territory availability and publish the drafts." },
+          { title: "Consent", text: "Load consent and snapshots as decided, then run the consent resharing jobs." },
+          { title: "Content and email", text: "Load presentations and email templates through the content API with approval dates." },
+          { title: "Activity history", text: "Visits and their children within the agreed window, with visit locking off during the load; then run the visit sharing job." },
+          { title: "Samples", text: "Locations, batches, opening Initial counts and limits generated by template jobs." },
+          { title: "Medical", text: "Inquiry history for reference and insights; then run the inquiry share job after alignment." },
+          { title: "Plans", text: "Activity plans for the first live cycle, KAM templates, then open account plans." },
+          { title: "Devices", text: "Generate the mobile metadata cache for every profile and test a full first sync with production volumes." }
+        ] },
+        { type: "ask", title: "Questions for the cut-over plan", items: [
+          { q: "How long can the field work without the CRM?", why: "The freeze window shapes the whole cut-over.",
+            answers: [
+              { a: "A weekend", then: "Plan a Friday freeze, weekend loads and Monday first sync, with a final delta of anything changed during the week." },
+              { a: "Several days", then: "Give reps a paper or offline fallback and a clear catch-up rule for entries made during the freeze." }
+            ] },
+          { q: "Who signs the reconciliation for a country?", why: "Without a named owner, go/no-go becomes a debate.",
+            answers: [
+              { a: "The country's business owner, with operations", then: "Give them counts per object and territory against the source, and a sample of records to check by hand." }
+            ] },
+          { q: "How do iPads get the new app and data?", why: "Device rollout is often the slowest step.",
+            answers: [
+              { a: "Through mobile device management", then: "Distribute the app through MDM with managed app configuration, before go-live day." },
+              { a: "Users install it", then: "Send instructions a week ahead and have super users check every device on day one." }
+            ] }
+        ] },
+        { type: "principles", title: "Testing a wave", items: [
+          { title: "Core regression first", text: "Run the core regression suite after each wave's localisation lands. A country variant must not break another country." },
+          { title: "Country UAT by persona", text: "Rep, manager, MSL, KAM and country admin each run their scripts on iPads, in their language, offline as well as online." },
+          { title: "Visibility tests", text: "Prove that users cannot see other countries' customers, inquiries or insights." },
+          { title: "Volume and performance", text: "First sync with real volumes, from the customer network, on the devices reps actually use." }
+        ] },
+        { type: "watch", title: "Watch out", items: [
+          "Picklist values loaded in local languages instead of base values.",
+          "External IDs not marked unique, so reruns create duplicates.",
+          "Accounts without a primary Healthcare Provider record: they are skipped by alignment and vanish from the iPad.",
+          "Skipped trigger handlers without their replacement batch jobs.",
+          "A legacy contract or data feed ending before the new system is live."
+        ] },
+        { type: "done", title: "Done when (per wave)", items: [
+          "Two clean mock loads with timings",
+          "Reconciliation signed by each country",
+          "Core regression and country UAT passed",
+          "Cut-over runbook rehearsed, with a go/no-go meeting per country",
+          "Devices ready and first sync tested at volume",
+          "Hypercare rota and exit criteria agreed"
+        ] }
+      ]
+    },
+
+    /* ================================================================== */
+    {
+      id: "run", group: "Programme", title: "Run and release management", phase: "p8", status: "ready", kicker: "Phase 8",
+      summary: "Change classes, core versus local control, the Salesforce release calendar, support and adoption.",
+      intro: "Go-live of the last wave is the start of the longest phase. Salesforce ships three major releases a year, countries keep asking for change, and the core erodes unless someone defends it. Plan the run model before the pilot goes live.",
+      sections: [
+        { type: "principles", title: "Change classes", items: [
+          { title: "Standard (pre-approved)", text: "User changes, tested data loads, values on uncontrolled picklists, reports and list views. Country admins do these within agreed limits." },
+          { title: "Minor", text: "A field, a layout change, a setting for one profile. Needs a business purpose and the design authority's check for core impact." },
+          { title: "Major", text: "New features, new objects, integration changes, anything touching core. Goes into a release with full regression." }
+        ] },
+        { type: "ask", title: "Questions for the run model", items: [
+          { q: "Who approves a change requested by one country?", why: "This is where core erodes.",
+            answers: [
+              { a: "The global design authority", then: "Ask which other countries need it before building it. A change two countries need is a core candidate." },
+              { a: "The country itself", then: "Limit country authority to local items; anything touching core goes to the design authority." }
+            ] },
+          { q: "How often do you release?", why: "Cadence balances country patience against regression effort.",
+            answers: [
+              { a: "Monthly minor, quarterly major", then: "Align the major releases around Salesforce's three releases, with regression in each sandbox preview window." },
+              { a: "Ad hoc", then: "Expect drift and surprise regressions. Agree a calendar." }
+            ] },
+          { q: "How is support organised across countries and languages?", why: "Users need help in their language, fast.",
+            answers: [
+              { a: "Super users, country admin, central team", then: "Write a tiered support model with handover rules and response times per tier." },
+              { a: "Central team only", then: "Plan language coverage and time zones explicitly." }
+            ] },
+          { q: "How do you know the system is used well?", why: "Adoption, not go-live, is the business case.",
+            answers: [
+              { a: "Measures agreed upfront", then: "Track submitted visits, plan attainment, consent coverage, sync health and app usage per country, monthly." }
+            ] }
+        ] },
+        { type: "steps", title: "A release cycle", items: [
+          { title: "Scope", text: "Collect requests against the process catalogue; group them by core and local." },
+          { title: "Build in the build environment", text: "Commit to source control; never change production by hand." },
+          { title: "Regenerate what the iPad needs", text: "Layouts, settings and permissions reach mobile only through a new metadata cache. Regenerate the translation document too when labels change." },
+          { title: "Translate", text: "Run the translation cycle for new labels in every language before testing." },
+          { title: "Regression and country checks", text: "Core regression plus smoke tests per country and language." },
+          { title: "Deploy and communicate", text: "Release notes per country and language; super users brief their teams." }
+        ] },
+        { type: "mclist", title: "Multi-country", items: [
+          "Every local request is a chance to grow core. Look for a second country before building it locally.",
+          "Keep a register of profile-level Admin Console overrides per country; they silently diverge from the org default over time.",
+          "Schedule territory realignments per country on the release calendar; they trigger resharing jobs and support load.",
+          "Monitor packaged batch jobs centrally (Apex Jobs and the Admin Console schedules); failures in one country's job can stall shared queues."
+        ] },
+        { type: "watch", title: "Watch out", items: [
+          "Changes made directly in production, overwritten by the next deployment.",
+          "Profiles multiplying with each request; each one adds caches, field security and tests.",
+          "Releases that skip the metadata cache, so iPads lag behind desktop.",
+          "Translations forgotten for new labels."
+        ] },
+        { type: "done", title: "Done when", items: [
+          "Change classes and approval rules published",
+          "Release calendar aligned with Salesforce releases",
+          "Support model with tiers, languages and response times",
+          "Adoption measures agreed and reported per country",
+          "Register of country-specific configuration maintained"
+        ] }
+      ]
+    }
+  ];
+
+  chapters.forEach(function (ch) {
+    var idx = -1;
+    C.chapters.forEach(function (c, i) { if (c.id === ch.id) idx = i; });
+    if (idx >= 0) C.chapters[idx] = ch; else C.chapters.push(ch);
+  });
+
+  var links = {
+    p0: ["org-strategy"],
+    p1: ["foundation", "country-model"],
+    p2: ["catalogue", "country-model", "accounts", "territories", "products", "visits", "samples", "consent", "medical", "planning"],
+    p3: ["country-model", "run"],
+    p4: ["country-model", "territories", "products", "consent"],
+    p5: ["migration", "accounts", "samples"],
+    p6: ["migration"],
+    p7: ["migration"],
+    p8: ["run"]
+  };
+  C.phases.forEach(function (p) { if (links[p.id]) p.chapters = links[p.id]; });
+})();
+
+</script>
+<script>
+/* Generated by tools/gen-decks.js: do not edit by hand. */
+window.COOKBOOK.decks = [
+ {
+  "id": "kickoff",
+  "file": "01-programme-kickoff.pptx",
+  "title": "Programme kickoff",
+  "phase": "p0",
+  "audience": "Sponsor, country leads, programme team",
+  "when": "Start of phase 0",
+  "purpose": "Align everyone on goals, scope, governance, org model and the wave plan.",
+  "chapters": [
+   "org-strategy"
+  ],
+  "kind": "gate",
+  "slides": [
+   "Programme kickoff",
+   "Agenda",
+   "Why we are doing this",
+   "Scope",
+   "Org model",
+   "Governance",
+   "The route: nine phases",
+   "Wave plan",
+   "Top risks",
+   "Ways of working",
+   "Next 30 days",
+   "Questions, decisions and next steps"
+  ]
+ },
+ {
+  "id": "discovery-accounts",
+  "file": "02-discovery-accounts.pptx",
+  "title": "Discovery workshop: Accounts and customer data",
+  "phase": "p2",
+  "audience": "Country SMEs, process owners, solution team",
+  "when": "Phase 2, one workshop per area",
+  "purpose": "Rate the processes, ask the chapter's questions and record decisions per country for accounts and customer data.",
+  "chapters": [
+   "accounts",
+   "catalogue"
+  ],
+  "kind": "discovery",
+  "slides": [
+   "Discovery workshop: Accounts and customer data",
+   "Agenda",
+   "How Life Sciences Cloud models it",
+   "Coming from Veeva CRM",
+   "Rate the processes per country",
+   "Who owns HCP and HCO data in each country after go-live?",
+   "Which customer types exist in each country?",
+   "Which identifiers and credentials matter in each country?",
+   "One global specialty list, or local lists?",
+   "How are addresses structured and used?",
+   "How far may reps search outside their territory and country?",
+   "Who fixes duplicates?",
+   "Which customer classifications are global, and which are local?",
+   "Multi-country rules",
+   "Watch-outs and exit criteria",
+   "Decisions and actions",
+   "Questions, decisions and next steps"
+  ]
+ },
+ {
+  "id": "discovery-territories",
+  "file": "03-discovery-territories.pptx",
+  "title": "Discovery workshop: Territories and alignment",
+  "phase": "p2",
+  "audience": "Country SMEs, process owners, solution team",
+  "when": "Phase 2, one workshop per area",
+  "purpose": "Rate the processes, ask the chapter's questions and record decisions per country for territories and alignment.",
+  "chapters": [
+   "territories",
+   "catalogue"
+  ],
+  "kind": "discovery",
+  "slides": [
+   "Discovery workshop: Territories and alignment",
+   "Agenda",
+   "How Life Sciences Cloud models it",
+   "Coming from Veeva CRM",
+   "Rate the processes per country",
+   "How is each country's field force organised?",
+   "Who produces the alignment today, and how often does it change?",
+   "Do several teams or reps cover the same customer?",
+   "Should HCPs follow the hospital or practice they work at?",
+   "Which products may each territory promote?",
+   "Who outside the field force needs to see a country's accounts?",
+   "What happens when accounts move between territories?",
+   "Multi-country rules",
+   "Watch-outs and exit criteria",
+   "Decisions and actions",
+   "Questions, decisions and next steps"
+  ]
+ },
+ {
+  "id": "discovery-products",
+  "file": "04-discovery-products.pptx",
+  "title": "Discovery workshop: Products, messages and content",
+  "phase": "p2",
+  "audience": "Country SMEs, process owners, solution team",
+  "when": "Phase 2, one workshop per area",
+  "purpose": "Rate the processes, ask the chapter's questions and record decisions per country for products, messages and content.",
+  "chapters": [
+   "products",
+   "catalogue"
+  ],
+  "kind": "discovery",
+  "slides": [
+   "Discovery workshop: Products, messages and content",
+   "Agenda",
+   "How Life Sciences Cloud models it",
+   "Coming from Veeva CRM",
+   "Rate the processes per country",
+   "Do products carry the same name in every country?",
+   "Which physical items exist: samples, promotional items, order items?",
+   "Are key messages global and translated, or written locally?",
+   "Where does approved content come from, and how will it reach LSC?",
+   "How do you stop reps using the wrong content?",
+   "Which languages and sending domains will approved email use?",
+   "Multi-country rules",
+   "Watch-outs and exit criteria",
+   "Decisions and actions",
+   "Questions, decisions and next steps"
+  ]
+ },
+ {
+  "id": "discovery-visits",
+  "file": "05-discovery-visits.pptx",
+  "title": "Discovery workshop: Visits and call reporting",
+  "phase": "p2",
+  "audience": "Country SMEs, process owners, solution team",
+  "when": "Phase 2, one workshop per area",
+  "purpose": "Rate the processes, ask the chapter's questions and record decisions per country for visits and call reporting.",
+  "chapters": [
+   "visits",
+   "catalogue"
+  ],
+  "kind": "discovery",
+  "slides": [
+   "Discovery workshop: Visits and call reporting",
+   "Agenda",
+   "How Life Sciences Cloud models it",
+   "Coming from Veeva CRM",
+   "Rate the processes per country",
+   "Which kinds of visits do countries record?",
+   "What must a rep capture on every visit, and what is optional?",
+   "When does a visit need an HCP signature?",
+   "Do managers join visits?",
+   "How will remote meetings run, and is the choice the same in every country?",
+   "Which scheduling rules apply: visit frequency, future limits, holidays, time off?",
+   "Do reps record expenses on visits, and where do they go?",
+   "Multi-country rules",
+   "Watch-outs and exit criteria",
+   "Decisions and actions",
+   "Questions, decisions and next steps"
+  ]
+ },
+ {
+  "id": "discovery-samples",
+  "file": "06-discovery-samples.pptx",
+  "title": "Discovery workshop: Samples",
+  "phase": "p2",
+  "audience": "Country SMEs, process owners, solution team",
+  "when": "Phase 2, one workshop per area",
+  "purpose": "Rate the processes, ask the chapter's questions and record decisions per country for samples.",
+  "chapters": [
+   "samples",
+   "catalogue"
+  ],
+  "kind": "discovery",
+  "slides": [
+   "Discovery workshop: Samples",
+   "Agenda",
+   "How Life Sciences Cloud models it",
+   "Coming from Veeva CRM",
+   "Rate the processes per country",
+   "Does the country sample at all?",
+   "Are samples hand-carried, shipped to the practitioner, or both?",
+   "What limits apply per HCP, and where do they come from?",
+   "Do reps keep stock, and how is it controlled?",
+   "Which licence checks apply before sampling?",
+   "How must batches be traceable for recalls?",
+   "Multi-country rules",
+   "Watch-outs and exit criteria",
+   "Decisions and actions",
+   "Questions, decisions and next steps"
+  ]
+ },
+ {
+  "id": "discovery-consent",
+  "file": "07-discovery-consent.pptx",
+  "title": "Discovery workshop: Consent",
+  "phase": "p2",
+  "audience": "Country SMEs, process owners, solution team",
+  "when": "Phase 2, one workshop per area",
+  "purpose": "Rate the processes, ask the chapter's questions and record decisions per country for consent.",
+  "chapters": [
+   "consent",
+   "catalogue"
+  ],
+  "kind": "discovery",
+  "slides": [
+   "Discovery workshop: Consent",
+   "Agenda",
+   "How Life Sciences Cloud models it",
+   "Coming from Veeva CRM",
+   "Rate the processes per country",
+   "What does the law require in each country, per channel?",
+   "Is consent per channel or per product?",
+   "What proof is required?",
+   "Which system is the source of truth for consent?",
+   "May reps save without asking every channel?",
+   "How much consent history do you migrate?",
+   "Multi-country rules",
+   "Watch-outs and exit criteria",
+   "Decisions and actions",
+   "Questions, decisions and next steps"
+  ]
+ },
+ {
+  "id": "discovery-medical",
+  "file": "08-discovery-medical.pptx",
+  "title": "Discovery workshop: Medical",
+  "phase": "p2",
+  "audience": "Country SMEs, process owners, solution team",
+  "when": "Phase 2, one workshop per area",
+  "purpose": "Rate the processes, ask the chapter's questions and record decisions per country for medical.",
+  "chapters": [
+   "medical",
+   "catalogue"
+  ],
+  "kind": "discovery",
+  "slides": [
+   "Discovery workshop: Medical",
+   "Agenda",
+   "How Life Sciences Cloud models it",
+   "Coming from Veeva CRM",
+   "Rate the processes per country",
+   "Who answers medical inquiries in each country?",
+   "How must the rep attest an inquiry?",
+   "How do adverse events and product complaints reach pharmacovigilance?",
+   "Who may see medical insights?",
+   "Multi-country rules",
+   "Watch-outs and exit criteria",
+   "Decisions and actions",
+   "Questions, decisions and next steps"
+  ]
+ },
+ {
+  "id": "discovery-planning",
+  "file": "09-discovery-planning.pptx",
+  "title": "Discovery workshop: Planning and KAM",
+  "phase": "p2",
+  "audience": "Country SMEs, process owners, solution team",
+  "when": "Phase 2, one workshop per area",
+  "purpose": "Rate the processes, ask the chapter's questions and record decisions per country for planning and KAM.",
+  "chapters": [
+   "planning",
+   "catalogue"
+  ],
+  "kind": "discovery",
+  "slides": [
+   "Discovery workshop: Planning and KAM",
+   "Agenda",
+   "How Life Sciences Cloud models it",
+   "Coming from Veeva CRM",
+   "Rate the processes per country",
+   "How do countries set call targets?",
+   "Who reviews and approves targets, and how long does it take?",
+   "How long is a cycle in each country?",
+   "Which accounts get key account plans, and how standard are they?",
+   "Where do next best customer and action recommendations come from?",
+   "Which time off reasons exist per country?",
+   "Multi-country rules",
+   "Watch-outs and exit criteria",
+   "Decisions and actions",
+   "Questions, decisions and next steps"
+  ]
+ },
+ {
+  "id": "design-review",
+  "file": "10-design-review.pptx",
+  "title": "Design review",
+  "phase": "p2",
+  "audience": "Design authority",
+  "when": "End of each area design, and weekly during phases 2 to 3",
+  "purpose": "Approve decisions, rule on local variant requests and agree how gaps are handled.",
+  "chapters": [
+   "country-model",
+   "catalogue"
+  ],
+  "kind": "gate",
+  "slides": [
+   "Design review",
+   "What we decide today",
+   "Where the template stands",
+   "Decisions for approval",
+   "Local variant requests",
+   "Gaps",
+   "Design rules check",
+   "Decisions recorded and next review"
+  ]
+ },
+ {
+  "id": "core-showcase",
+  "file": "11-core-build-showcase.pptx",
+  "title": "Core build showcase",
+  "phase": "p3",
+  "audience": "Countries, business owners",
+  "when": "End of phase 3, before the first wave",
+  "purpose": "Show what the global template does, persona by persona, before countries localise it.",
+  "chapters": [
+   "country-model",
+   "run"
+  ],
+  "kind": "gate",
+  "slides": [
+   "Core build showcase",
+   "What core contains",
+   "Demo script: a rep's day",
+   "Demo script: manager, MSL and admin",
+   "Core versus what your country adds",
+   "Feedback we need from you",
+   "Questions, decisions and next steps"
+  ]
+ },
+ {
+  "id": "wave-kickoff",
+  "file": "12-wave-kickoff.pptx",
+  "title": "Wave kickoff",
+  "phase": "p4",
+  "audience": "Wave countries: leads, data owners, super users",
+  "when": "Start of each wave (phase 4)",
+  "purpose": "Walk the wave's countries through what core already contains, what they may localise and what they must deliver.",
+  "chapters": [
+   "country-model",
+   "territories",
+   "products",
+   "consent",
+   "migration"
+  ],
+  "kind": "gate",
+  "slides": [
+   "Wave kickoff",
+   "Agenda",
+   "This wave",
+   "What core already gives you",
+   "What your country can localise",
+   "What we need from you",
+   "Timeline for this wave",
+   "Roles in your country",
+   "Risks for this wave",
+   "Questions, decisions and next steps"
+  ]
+ },
+ {
+  "id": "migration-readiness",
+  "file": "13-migration-readiness.pptx",
+  "title": "Migration readiness",
+  "phase": "p5",
+  "audience": "Country owners, data team, programme",
+  "when": "After each mock load and before cut-over",
+  "purpose": "Show mock load results, reconciliation and open data issues, and agree what must be fixed before cut-over.",
+  "chapters": [
+   "migration",
+   "accounts",
+   "samples"
+  ],
+  "kind": "gate",
+  "slides": [
+   "Migration readiness",
+   "Mock load [n] at a glance",
+   "Load results by object",
+   "Reconciliation by country",
+   "Open data issues",
+   "Cut-over timing",
+   "Readiness verdict and actions"
+  ]
+ },
+ {
+  "id": "uat-kickoff",
+  "file": "14-uat-kickoff.pptx",
+  "title": "UAT kickoff",
+  "phase": "p6",
+  "audience": "Testers, super users, country leads",
+  "when": "Start of user acceptance testing for each wave",
+  "purpose": "Explain scope, personas, devices, scripts, defect handling and sign-off rules.",
+  "chapters": [
+   "migration"
+  ],
+  "kind": "gate",
+  "slides": [
+   "UAT kickoff",
+   "What UAT proves",
+   "Testers and personas",
+   "What we test",
+   "Defect severity",
+   "Entry and exit criteria",
+   "How a defect travels",
+   "Questions, decisions and next steps"
+  ]
+ },
+ {
+  "id": "go-no-go",
+  "file": "15-go-no-go.pptx",
+  "title": "Go/no-go",
+  "phase": "p7",
+  "audience": "Steering committee, country leads",
+  "when": "Before cut-over of each wave",
+  "purpose": "Decide per country whether to go live, on evidence.",
+  "chapters": [
+   "migration"
+  ],
+  "kind": "gate",
+  "slides": [
+   "Go/no-go",
+   "Decision required",
+   "Go-live criteria",
+   "Readiness by country",
+   "Open defects and accepted risks",
+   "If we go, and if we do not",
+   "Decision and sign-off"
+  ]
+ },
+ {
+  "id": "training",
+  "file": "16-end-user-training-coming-from-veeva.pptx",
+  "title": "Your day in Life Sciences Cloud: coming from Veeva",
+  "phase": "p7",
+  "audience": "Reps, MSLs, KAMs, managers",
+  "when": "Before go-live of each wave",
+  "purpose": "Show field users what changes in their day and what stays the same.",
+  "chapters": [
+   "visits",
+   "products",
+   "planning",
+   "migration"
+  ],
+  "kind": "gate",
+  "slides": [
+   "Your day in Life Sciences Cloud: coming from Veeva",
+   "What changes, and why",
+   "Your day",
+   "Words that change",
+   "Working offline",
+   "Practice exercises",
+   "Getting help",
+   "Questions"
+  ]
+ },
+ {
+  "id": "hypercare",
+  "file": "17-hypercare-and-lessons-learned.pptx",
+  "title": "Hypercare and lessons learned",
+  "phase": "p7",
+  "audience": "Programme, country leads, next wave",
+  "when": "Weekly during hypercare and at its exit",
+  "purpose": "Track issues and adoption after go-live, and carry lessons into the next wave.",
+  "chapters": [
+   "migration",
+   "run"
+  ],
+  "kind": "gate",
+  "slides": [
+   "Hypercare and lessons learned",
+   "Hypercare week [n]",
+   "Top issues",
+   "Adoption by country",
+   "Lessons learned",
+   "Hypercare exit criteria",
+   "Actions for the next wave"
+  ]
+ },
+ {
+  "id": "steerco",
+  "file": "18-steering-committee-update.pptx",
+  "title": "Steering committee update",
+  "phase": "p8",
+  "audience": "Sponsors",
+  "when": "Monthly, throughout the programme",
+  "purpose": "Report status, risks and the decisions sponsors need to take.",
+  "chapters": [
+   "org-strategy",
+   "run"
+  ],
+  "kind": "gate",
+  "slides": [
+   "Steering committee update",
+   "Summary",
+   "Status by workstream",
+   "Where we are on the route",
+   "Key risks and issues",
+   "Decisions needed",
+   "Next month"
+  ]
+ }
+];
+
+</script>
+<script>
+(function () {
+  "use strict";
+  var C = window.COOKBOOK;
+  var K = "lscck:v1:";
+  var store = {
+    get: function (k, d) { try { var v = localStorage.getItem(K + k); return v ? JSON.parse(v) : d; } catch (e) { return d; } },
+    set: function (k, v) { try { localStorage.setItem(K + k, JSON.stringify(v)); } catch (e) { /* storage unavailable */ } }
+  };
+  var ICON = {
+    globe: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z"/></svg>',
+    warn: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 3 2 20h20L12 3z"/><path d="M12 10v4M12 17h.01"/></svg>',
+    dl: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 3v12m0 0-5-5m5 5 5-5M4 19h16"/></svg>',
+    chev: '<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>'
+  };
+  function h(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+  function $(s) { return document.querySelector(s); }
+  function chapter(id) { return C.chapters.filter(function (c) { return c.id === id; })[0]; }
+  function phase(id) { return C.phases.filter(function (p) { return p.id === id; })[0]; }
+  function readyChapter(c) { return c.status === "ready" || c.status === "tool" || c.status === "decks"; }
+
+  /* ---------- decks ---------- */
+  var DECKS = C.decks || [];
+  var EXTRA_PHASES = { steerco: ["p0", "p8"], hypercare: ["p7", "p8"] };
+  function deckPhases(d) { return EXTRA_PHASES[d.id] || [d.phase]; }
+  function decksForPhase(pid) { return DECKS.filter(function (d) { return deckPhases(d).indexOf(pid) >= 0; }); }
+  function decksForChapter(cid) { return DECKS.filter(function (d) { return (d.chapters || []).indexOf(cid) >= 0; }); }
+  function shortName(d) { return d.kind === "discovery" ? d.title.replace("Discovery workshop: ", "") : d.title; }
+  function dlBtn(d, label, cls) {
+    return '<button class="btn small dl ' + (cls || "") + '" data-act="dl" data-file="' + h(d.file) + '" title="Download ' + h(d.title) + ' (PowerPoint)">' + ICON.dl + "<span>" + h(label || d.title) + "</span></button>";
+  }
+  function zipBtn(label) { return '<button class="btn dl primary" data-act="dl" data-file="' + h(C.deckZip) + '">' + ICON.dl + "<span>" + h(label || "Download all decks (.zip)") + "</span></button>"; }
+  function deckBar(list, heading) {
+    if (!list.length) return "";
+    var disc = list.filter(function (d) { return d.kind === "discovery"; }), other = list.filter(function (d) { return d.kind !== "discovery"; });
+    return '<div class="deckbar"><span class="deckbar-h">' + ICON.dl + h(heading || "Decks for this chapter") + "</span>" +
+      other.map(function (d) { return dlBtn(d); }).join("") +
+      (disc.length > 1 ? '<span class="deckbar-sub">Discovery workshops:</span>' + disc.map(function (d) { return dlBtn(d, shortName(d)); }).join("") : disc.map(function (d) { return dlBtn(d); }).join("")) +
+      '<a class="deckbar-more" href="#decks">All decks</a></div>';
+  }
+  var dlNs = null;
+  function downloadsNs() {
+    if (!dlNs) dlNs = (window.claude && typeof window.claude.use === "function") ? window.claude.use("downloads").then(function (x) { return x; }, function () { return null; }) : Promise.resolve(null);
+    return dlNs;
+  }
+  function linkDownload(url, file) {
+    var a = document.createElement("a"); a.href = url; a.download = file; a.rel = "noopener";
+    document.body.appendChild(a); a.click(); a.remove();
+  }
+  function fetchDeck(file) {
+    return fetch((C.deckData || "deck-data/") + file + ".json").then(function (r) {
+      if (!r.ok) throw { code: "missing" };
+      return r.json();
+    }).then(function (j) {
+      var bin = atob(j.b64), bytes = new Uint8Array(bin.length);
+      for (var i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+      return new Blob([bytes], { type: j.type || "application/octet-stream" });
+    });
+  }
+  function downloadFile(file, btn) {
+    if (btn) btn.disabled = true;
+    var done = function () { if (btn) btn.disabled = false; };
+    downloadsNs().then(function (dl) {
+      if (dl) {
+        return fetchDeck(file).then(function (b) { return dl.save({ filename: file, data: b }); })
+          .then(function () { toast(file + " saved."); done(); }, function (err) {
+            done();
+            var code = err && err.code;
+            if (code === "declined") return;
+            if (code === "rate_limited") { toast("A download is already waiting for your confirmation."); return; }
+            toast("Download is not available in this view. Open the page on claude.ai and try again.");
+          });
+      }
+      /* Outside Claude (self-hosted): use the packed data if present, else a plain link to the .pptx. */
+      return fetchDeck(file).then(function (b) {
+        var u = URL.createObjectURL(b); linkDownload(u, file); setTimeout(function () { URL.revokeObjectURL(u); }, 4000); done();
+      }, function () { linkDownload((C.deckBase || "decks/") + file, file); done(); });
+    });
+  }
+
+
+  /* ---------- checklist progress ---------- */
+  function checks() { return store.get("checks", {}); }
+  function doneItems(c) {
+    var s = (c.sections || []).filter(function (x) { return x.type === "done"; })[0];
+    return s ? s.items : [];
+  }
+  function progress(c) {
+    var items = doneItems(c), ck = checks()[c.id] || {};
+    var n = items.filter(function (_, i) { return ck[i]; }).length;
+    return { n: n, total: items.length };
+  }
+
+  /* ---------- navigation ---------- */
+  function renderNav(active) {
+    var groups = ["Programme", "Design", "Areas", "Tools"];
+    var html = '<h2>Start</h2><ul><li><a class="nav" href="#start"' + (active === "start" ? ' aria-current="page"' : "") + '><span>The rollout route</span><span class="meta">9 phases</span></a></li></ul>';
+    groups.forEach(function (g) {
+      var items = C.chapters.filter(function (c) { return c.group === g; });
+      if (!items.length) return;
+      html += "<h2>" + g + "</h2><ul>" + items.map(function (c) {
+        var meta = "";
+        if (c.status === "planned") meta = '<span class="meta">next</span>';
+        else if (c.status === "tool") meta = '<span class="meta">tool</span>';
+        else if (c.status === "decks") meta = '<span class="meta">' + DECKS.length + "</span>";
+        else { var p = progress(c); meta = '<span class="meta' + (p.n === p.total && p.total ? " done" : "") + '">' + p.n + "/" + p.total + "</span>"; }
+        return '<li><a class="nav' + (c.status === "planned" ? " planned" : "") + '" href="#' + c.id + '"' + (active === c.id ? ' aria-current="page"' : "") + "><span>" + h(c.title) + "</span>" + meta + "</a></li>";
+      }).join("") + "</ul>";
+    });
+    $("#nav").innerHTML = html;
+  }
+
+  function phaseDecks(p) {
+    var list = decksForPhase(p.id);
+    if (!list.length) return "";
+    var disc = list.filter(function (d) { return d.kind === "discovery"; }), other = list.filter(function (d) { return d.kind !== "discovery"; });
+    return '<div class="phase-decks"><h4>Decks</h4><div class="deck-row">' + other.map(function (d) { return dlBtn(d); }).join("") +
+      (disc.length ? '<span class="deckbar-sub">Discovery:</span>' + disc.map(function (d) { return dlBtn(d, shortName(d)); }).join("") : "") + "</div></div>";
+  }
+
+  /* ---------- start page ---------- */
+  function renderStart() {
+    var lastReady = -1;
+    C.phases.forEach(function (p, i) { if (p.chapters.some(function (id) { var c = chapter(id); return c && readyChapter(c); })) lastReady = i; });
+    var pct = lastReady < 0 ? 0 : Math.round((lastReady + 0.5) / C.phases.length * 100);
+    var stations = C.phases.map(function (p) {
+      var ready = p.chapters.some(function (id) { var c = chapter(id); return c && readyChapter(c); });
+      return '<a class="station' + (ready ? " ready" : "") + '" href="#start" data-phase="' + p.id + '"><span class="dot">' + p.n + '</span><span class="nm">' + h(p.name) + '</span><span class="ct">' + (ready ? p.chapters.length + " chapter" + (p.chapters.length > 1 ? "s" : "") : "coming") + "</span></a>";
+    }).join("");
+    var phases = C.phases.map(function (p) {
+      var links = p.chapters.map(function (id) { var c = chapter(id); return c ? '<a href="#' + c.id + '">' + h(c.title) + "</a>" : ""; }).join("");
+      return '<article class="phase" id="phase-' + p.id + '"><div class="num">' + p.n + "</div><div>" +
+        "<h3>" + h(p.name) + '</h3><p class="goal">' + h(p.goal) + "</p>" +
+        '<div class="cols"><div><h4>Outputs</h4><ul>' + p.outputs.map(function (x) { return "<li>" + h(x) + "</li>"; }).join("") + "</ul></div>" +
+        "<div><h4>Gate to move on</h4><ul>" + p.gate.map(function (x) { return "<li>" + h(x) + "</li>"; }).join("") + "</ul></div></div>" +
+        '<div class="mc">' + ICON.globe + "<div><b>Multi-country:</b> " + h(p.mc) + "</div></div>" +
+        (links ? '<div class="links">' + links + "</div>" : "") + phaseDecks(p) + "</div></article>";
+    }).join("");
+    return '<div class="page"><header class="hero"><span class="kicker">Agentforce Life Sciences for Customer Engagement</span>' +
+      "<h1>Roll out Life Sciences Cloud, country by country.</h1>" +
+      "<p>A field manual for consultants and internal programme leads running a multi-country implementation or a move from Veeva CRM. Each chapter tells you what to ask, what every answer means for the build, what changes coming from Veeva, and when you are done.</p></header>" +
+      '<div class="route" aria-label="Rollout phases"><div class="route-track" style="--pct:' + pct + '%">' + stations + "</div>" +
+      '<div class="waves"><span>A typical wave plan:</span><span class="stamp">PILOT · 1 country</span><span class="stamp">WAVE 1 · 2–3</span><span class="stamp">WAVE 2 · 3–4</span><span class="stamp muted">WAVE n · …</span><span>Phases 4 to 7 repeat for every wave.</span></div></div>' +
+      '<div class="howto"><div><b>Ask</b>Workshop questions, each with the answers you will hear and what they mean for the build.</div>' +
+      "<div><b>Coming from Veeva</b>What each familiar object or habit becomes in Life Sciences Cloud.</div>" +
+      "<div><b>Multi-country</b>Blue notes: where countries diverge and how to keep one core.</div>" +
+      "<div><b>Done when</b>Exit checklists you can tick. Progress stays in this browser.</div>" +
+      '<div><b>Deck kit</b>' + DECKS.length + ' editable PowerPoint templates, one per gate. <a href="#decks">Browse the kit</a>.</div></div>' +
+      '<section class="block"><h2>The nine phases</h2><p class="lead">Phases 0 to 3 happen once. Phases 4 to 7 repeat for each wave of countries, and phase 8 never ends.</p><div class="phase-list">' + phases + "</div></section>" +
+      footer() + "</div>";
+  }
+
+  /* ---------- chapter blocks ---------- */
+  function mcNote(text) { return '<div class="mc">' + ICON.globe + "<div><b>Multi-country:</b> " + h(text) + "</div></div>"; }
+
+  var BLOCKS = {
+    ask: function (s, c) {
+      return '<section class="block"><div class="block-head"><div><h2>' + h(s.title) + '</h2><p class="lead">Open a question to see the answers you are likely to hear and what each one means.</p></div>' +
+        '<div class="deck-row">' + decksForChapter(c.id).filter(function (d) { return d.kind === "discovery"; }).map(function (d) { return dlBtn(d, "Workshop deck", "primary"); }).join("") +
+        '<button class="btn" data-act="copy-questions" data-ch="' + c.id + '">Copy questions</button></div></div><div class="ask">' +
+        s.items.map(function (q, i) {
+          return '<details class="q"' + (i === 0 ? " open" : "") + '><summary><span class="qn">' + String(i + 1).padStart(2, "0") + '</span><span class="qt">' + h(q.q) + '<span class="qw">' + h(q.why) + "</span></span>" + ICON.chev + "</summary>" +
+            '<div class="answers">' + q.answers.map(function (a) { return '<div class="ans"><span class="if">' + h(a.a) + '</span><span class="then">' + h(a.then) + "</span></div>"; }).join("") + "</div></details>";
+        }).join("") + "</div></section>";
+    },
+    compare: function (s) {
+      return '<section class="block"><h2>' + h(s.title) + '</h2><div class="table-wrap" style="margin-top:12px"><table><thead><tr><th></th>' + s.columns.map(function (x) { return "<th>" + h(x) + "</th>"; }).join("") + "</tr></thead><tbody>" +
+        s.rows.map(function (r) { return "<tr>" + r.map(function (x) { return "<td>" + h(x) + "</td>"; }).join("") + "</tr>"; }).join("") + "</tbody></table></div>" +
+        (s.note ? mcNote(s.note) : "") + "</section>";
+    },
+    principles: function (s) {
+      return '<section class="block"><h2>' + h(s.title) + '</h2><div class="cards" style="margin-top:12px">' +
+        s.items.map(function (p) { return '<div class="card"><h3>' + h(p.title) + "</h3><p>" + h(p.text) + "</p></div>"; }).join("") + "</div></section>";
+    },
+    decision: function (s) {
+      return '<section class="block"><h2>' + h(s.title) + '</h2><p class="lead">' + h(s.lead) + '</p><div class="decision">' +
+        s.items.map(function (p) { return '<div class="card"><h3>' + h(p.title) + "</h3><p>" + h(p.text) + "</p></div>"; }).join("") + "</div>" +
+        (s.note ? '<div class="note">' + h(s.note) + "</div>" : "") + "</section>";
+    },
+    steps: function (s) {
+      return '<section class="block"><h2>' + h(s.title) + '</h2><ol class="steps" style="margin-top:12px">' +
+        s.items.map(function (p) { return "<li><div><h3>" + h(p.title) + "</h3><p>" + h(p.text) + "</p>" + (p.mc ? mcNote(p.mc) : "") + "</div></li>"; }).join("") + "</ol></section>";
+    },
+    veeva: function (s) {
+      return '<section class="block"><h2>' + h(s.title) + '</h2><div class="table-wrap veeva" style="margin-top:12px"><table><thead><tr><th>In Veeva CRM</th><th>In Life Sciences Cloud</th><th>What to do</th></tr></thead><tbody>' +
+        s.items.map(function (r) { return "<tr><td>" + h(r.from) + "</td><td>" + h(r.to) + "</td><td>" + h(r.note) + "</td></tr>"; }).join("") + "</tbody></table></div></section>";
+    },
+    watch: function (s) {
+      return '<section class="block"><h2>' + h(s.title) + '</h2><ul class="watch" style="margin-top:12px">' + s.items.map(function (x) { return "<li>" + ICON.warn + "<span>" + h(x) + "</span></li>"; }).join("") + "</ul></section>";
+    },
+    mclist: function (s) {
+      return '<section class="block"><h2>' + h(s.title) + '</h2><div style="display:grid;gap:8px;margin-top:12px">' + s.items.map(function (x) { return '<div class="mc" style="margin-top:0">' + ICON.globe + "<div>" + h(x) + "</div></div>"; }).join("") + "</div></section>";
+    },
+    test: function (s) {
+      return '<section class="block"><h2>' + h(s.title) + '</h2><ul class="tests" style="margin-top:12px">' + s.items.map(function (x) { return "<li>" + h(x) + "</li>"; }).join("") + "</ul></section>";
+    },
+    done: function (s, c) {
+      var ck = checks()[c.id] || {}, p = progress(c);
+      return '<section class="block"><div class="block-head"><h2>' + h(s.title) + '</h2><span class="progress" id="prog-' + c.id + '">' + p.n + " of " + p.total + ' done</span></div><ul class="done">' +
+        s.items.map(function (x, i) { return '<li><label><input type="checkbox" id="ck-' + c.id + "-" + i + '" data-ch="' + c.id + '" data-i="' + i + '"' + (ck[i] ? " checked" : "") + "><span>" + h(x) + "</span></label></li>"; }).join("") + "</ul></section>";
+    }
+  };
+
+  function renderChapter(c) {
+    var p = phase(c.phase);
+    var head = '<header><span class="kicker">' + h(c.kicker) + "</span><h1>" + h(c.title) + "</h1>" +
+      (c.intro ? '<p class="intro">' + h(c.intro) + "</p>" : '<p class="intro">' + h(c.summary) + "</p>") +
+      (p ? '<div class="phase-tag">Mainly used in <a href="#start" data-phase="' + p.id + '">phase ' + p.n + ": " + h(p.name) + "</a></div>" : "") + "</header>";
+    if (c.status === "decks") return '<div class="page">' + head + renderDeckKit() + footer() + "</div>";
+    if (c.status === "tool") return '<div class="page">' + head + deckBar(decksForChapter(c.id), "Decks for the workshop") + renderCatalogue() + footer() + "</div>";
+    if (c.status === "planned") {
+      return '<div class="page">' + head + '<div class="planned-box"><p><b>This chapter is next in line.</b> It will follow the same pattern: questions to ask, what each answer means, what changes coming from Veeva, multi-country notes, watch-outs and an exit checklist.</p>' +
+        '<p>Until then, the <a href="#country-model">country model</a> and the <a href="#catalogue">process catalogue</a> cover the cross-cutting decisions for this area.</p></div>' + footer() + "</div>";
+    }
+    var model = c.model ? '<div class="model" aria-label="Key objects">' + c.model.map(function (m) { return "<div><b>" + h(m.obj) + "</b><span>" + h(m.note) + "</span></div>"; }).join("") + "</div>" : "";
+    return '<div class="page">' + head + deckBar(decksForChapter(c.id)) + model + c.sections.map(function (s) { return BLOCKS[s.type] ? BLOCKS[s.type](s, c) : ""; }).join("") + footer() + "</div>";
+  }
+
+  /* ---------- deck kit ---------- */
+  function renderDeckKit() {
+    var html = '<section class="block"><div class="kit-top"><div><h2>How to use the kit</h2><ol class="kit-steps">' +
+      "<li>Download a deck, or the whole kit.</li><li>Apply your company theme from PowerPoint's Design tab. Colours and fonts follow the theme.</li>" +
+      "<li>Replace everything in [brackets]. Speaker notes on each slide say how to use it.</li><li>For discovery workshops, rate processes live with the <a href=\"#catalogue\">process catalogue tool</a> and paste the result.</li></ol></div>" +
+      '<div class="kit-dl">' + zipBtn() + '<span class="progress">' + DECKS.length + " decks · " + DECKS.reduce(function (n, d) { return n + d.slides.length; }, 0) + " slides</span></div></div></section>";
+    C.phases.forEach(function (p) {
+      var list = DECKS.filter(function (d) { return d.phase === p.id; });
+      if (!list.length) return;
+      html += '<section class="block"><h2>Phase ' + p.n + ": " + h(p.name) + '</h2><div class="decks">' + list.map(function (d) {
+        return '<article class="deck"><div class="deck-head"><div><h3>' + h(d.title) + '</h3><p class="deck-meta">' + h(d.when) + " · " + h(d.audience) + "</p></div>" + dlBtn(d, "Download", "primary") + "</div>" +
+          "<p>" + h(d.purpose) + "</p>" +
+          '<details><summary>' + d.slides.length + " slides</summary><ol>" + d.slides.map(function (t) { return "<li>" + h(t) + "</li>"; }).join("") + "</ol></details>" +
+          ((d.chapters || []).length ? '<p class="deck-links">Used with: ' + d.chapters.map(function (id) { var ch = chapter(id); return ch ? '<a href="#' + ch.id + '">' + h(ch.title) + "</a>" : ""; }).join(" · ") + "</p>" : "") +
+          "</article>";
+      }).join("") + "</div></section>";
+    });
+    return html;
+  }
+
+  /* ---------- process catalogue ---------- */
+  function catState() {
+    var s = store.get("catalogue", null);
+    if (!s) s = exampleState();
+    return s;
+  }
+  function exampleState() {
+    var ex = C.catalogue.example, r = {};
+    C.catalogue.processes.forEach(function (_, i) { r[i] = {}; ex.countries.forEach(function (c, j) { r[i][c.code] = ex.ratings[i] ? ex.ratings[i][j] : ""; }); });
+    return { example: true, countries: ex.countries.slice(), ratings: r };
+  }
+  function classify(row, countries) {
+    var vals = countries.map(function (c) { return row[c.code] || ""; });
+    var rated = vals.filter(function (v) { return v; });
+    if (!rated.length) return { cls: "na", label: "Not rated" };
+    var need = vals.filter(function (v) { return v === "S" || v === "L" || v === "G"; });
+    if (!need.length) return { cls: "na", label: "Out of scope" };
+    if (vals.indexOf("G") >= 0) return { cls: "gap", label: "Gap in " + vals.filter(function (v) { return v === "G"; }).length };
+    if (vals.indexOf("L") >= 0) return { cls: "local", label: "Core + " + vals.filter(function (v) { return v === "L"; }).length + " variant" + (vals.filter(function (v) { return v === "L"; }).length > 1 ? "s" : "") };
+    return { cls: "core", label: "Core" + (need.length < countries.length ? " (" + need.length + "/" + countries.length + ")" : "") };
+  }
+  function renderCatalogue() {
+    var st = catState(), P = C.catalogue.processes, cs = st.countries;
+    var counts = { core: 0, local: 0, gap: 0, na: 0 };
+    var rows = P.map(function (p, i) {
+      var cl = classify(st.ratings[i] || {}, cs); counts[cl.cls]++;
+      var first = i === 0 || P[i - 1][0] !== p[0];
+      return '<tr class="' + (first ? "grp" : "") + '"><td class="l1">' + (first ? h(p[0]) : "") + '</td><td class="l2">' + h(p[1]) + '</td><td class="l3">' + h(p[2]) + "</td>" +
+        cs.map(function (c) {
+          var v = (st.ratings[i] || {})[c.code] || "";
+          var lab = C.catalogue.scale.filter(function (x) { return x.code === v; })[0].label;
+          return '<td class="c"><button class="cell ' + v + '" data-act="rate" data-i="' + i + '" data-c="' + h(c.code) + '" aria-label="' + h(p[2]) + ", " + h(c.code) + ": " + lab + '" title="' + lab + ' (click to change)">' + (v || "·") + "</button></td>";
+        }).join("") + '<td class="res ' + cl.cls + '">' + h(cl.label) + "</td></tr>";
+    }).join("");
+    var fit = cs.map(function (c) {
+      var t = { S: 0, L: 0, G: 0, N: 0, "": 0 };
+      P.forEach(function (_, i) { t[(st.ratings[i] || {})[c.code] || ""]++; });
+      var need = t.S + t.L + t.G;
+      var pct = need ? Math.round(t.S / need * 100) : 0;
+      return '<div class="cf"><span class="stamp">' + h(c.code) + '</span><div class="bar" role="img" aria-label="' + h(c.code) + ": " + t.S + " standard, " + t.L + " local, " + t.G + ' gaps">' +
+        (need ? '<i class="S" style="flex:' + t.S + '"></i><i class="L" style="flex:' + t.L + '"></i><i class="G" style="flex:' + t.G + '"></i>' : "") + "</div><span>" + (need ? pct + "% standard" : "not rated") + (t[""] ? " · " + t[""] + " open" : "") + "</span></div>";
+    }).join("");
+    var waves = ["Pilot", "Wave 1", "Wave 2", "Wave 3", "Wave 4"];
+    return '<section class="block"><h2>How to use it</h2><p class="lead">Run it live in the discovery workshop with all wave countries present. Click a cell to cycle its rating. A process is a <b>core</b> candidate when every country that needs it can use the standard; local variants and gaps go to the design authority.</p>' +
+      '<div class="legend">' + C.catalogue.scale.filter(function (x) { return x.code; }).map(function (x) { return '<span><span class="cell legend-cell ' + x.code + '" aria-hidden="true">' + x.code + "</span>" + h(x.label) + ": " + h(x.text) + "</span>"; }).join("") + "</div></section>" +
+      '<section class="block"><div class="block-head"><h2>Fit-gap by country</h2>' + (st.example ? '<span class="example-note">' + h(C.catalogue.example.label) + "</span>" : "") + "</div>" +
+      '<div class="toolbar"><label class="sr" for="new-cc">Country code</label><input id="new-cc" maxlength="3" placeholder="ISO" aria-describedby="cc-help">' +
+      '<label class="sr" for="new-wave">Wave</label><select id="new-wave">' + waves.map(function (w) { return "<option>" + w + "</option>"; }).join("") + "</select>" +
+      '<button class="btn small" data-act="add-country">Add country</button><span id="cc-help" class="progress">Two-letter ISO code, e.g. DE</span>' +
+      '<span style="flex:1"></span><button class="btn small" data-act="copy-cat">Copy as CSV</button><button class="btn small" data-act="example-cat">Load example</button><button class="btn small" data-act="clear-cat">Clear ratings</button></div>' +
+      '<div class="summary"><div class="tile"><b>' + counts.core + '</b><span>core candidates</span></div><div class="tile"><b>' + counts.local + '</b><span>core with local variants</span></div><div class="tile"><b>' + counts.gap + '</b><span>processes with gaps</span></div><div class="tile"><b>' + counts.na + '</b><span>not rated or out of scope</span></div></div>' +
+      '<div class="country-fit">' + fit + "</div>" +
+      '<div class="table-wrap" style="margin-top:16px"><table class="cat"><thead><tr><th>Area</th><th>Process</th><th>Step</th>' +
+      cs.map(function (c) { return '<th class="cc">' + h(c.code) + ' <button data-act="del-country" data-c="' + h(c.code) + '" aria-label="Remove ' + h(c.code) + '">✕</button><span class="wv">' + h(c.wave) + "</span></th>"; }).join("") +
+      "<th>Result</th></tr></thead><tbody>" + rows + "</tbody></table></div></section>";
+  }
+  function saveCat(st) { st.example = false; store.set("catalogue", st); }
+
+  /* ---------- footer, copy, toast ---------- */
+  function footer() {
+    return "<footer><p>" + h(C.checked) + ". Settings move between releases; confirm each one in your org before you rely on it.</p>" +
+      "<p>Independent guide, not affiliated with or endorsed by Salesforce, Inc. or Veeva Systems Inc. Salesforce, Agentforce and Life Sciences Cloud are trademarks of Salesforce, Inc.; Veeva and Vault CRM are trademarks of Veeva Systems.</p>" +
+      '<p class="byline">Maintained by <a href="https://www.linkedin.com/in/fandiyacine/" target="_blank" rel="noopener">Yacine Fandi</a>, Salesforce Certified Agentforce Life Sciences Consultant, Administrator, Platform App Builder and Agentforce Specialist. Text and decks are licensed under <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>: reuse and adapt them, with credit.</p></footer>';
+  }
+  function toast(m) { var t = document.createElement("div"); t.className = "toast"; t.setAttribute("role", "status"); t.textContent = m; document.body.appendChild(t); setTimeout(function () { t.remove(); }, 2400); }
+  function copy(text, what) {
+    var fail = function () {
+      var b = document.createElement("div"); b.className = "dialog-back"; b.id = "dlg";
+      b.innerHTML = '<div class="dialog" role="dialog" aria-modal="true" aria-label="' + h(what) + '"><div class="block-head"><b>' + h(what) + '</b><button class="btn small" data-act="close">Close</button></div><p style="margin:0 0 8px;font-size:14px">The clipboard is blocked here. Select the text and copy it.</p><textarea readonly id="out"></textarea></div>';
+      document.body.appendChild(b); var ta = b.querySelector("textarea"); ta.value = text; ta.focus(); ta.select();
+    };
+    try { navigator.clipboard.writeText(text).then(function () { toast(what + " copied."); }, fail); } catch (e) { fail(); }
+  }
+
+  /* ---------- router ---------- */
+  function route() {
+    var id = (location.hash || "#start").slice(1) || "start";
+    var c = chapter(id);
+    if (!c) id = "start";
+    renderNav(id);
+    $("#main").innerHTML = id === "start" ? renderStart() : renderChapter(c);
+    document.title = (id === "start" ? "" : c.title + " · ") + "LSC Multi-Country Rollout Cookbook";
+    $(".rail").classList.remove("open");
+    window.scrollTo(0, 0);
+  }
+
+  document.addEventListener("click", function (e) {
+    var ph = e.target.closest("[data-phase]");
+    if (ph) {
+      e.preventDefault();
+      var go = function () { var el = document.getElementById("phase-" + ph.getAttribute("data-phase")); if (el) el.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" }); };
+      if ((location.hash || "#start") !== "#start") { location.hash = "#start"; setTimeout(go, 50); } else go();
+      return;
+    }
+    var b = e.target.closest("[data-act]"); if (!b) return;
+    var act = b.getAttribute("data-act");
+    if (act === "menu") { $(".rail").classList.toggle("open"); b.setAttribute("aria-expanded", $(".rail").classList.contains("open")); }
+    else if (act === "close") { var d = $("#dlg"); if (d) d.remove(); }
+    else if (act === "dl") { downloadFile(b.getAttribute("data-file"), b); }
+    else if (act === "copy-questions") {
+      var c = chapter(b.getAttribute("data-ch"));
+      var lines = ["# " + c.title + ": workshop questions", ""];
+      c.sections.filter(function (s) { return s.type === "ask"; }).forEach(function (s) {
+        s.items.forEach(function (q, i) { lines.push((i + 1) + ". " + q.q, "   Why: " + q.why, ""); });
+      });
+      copy(lines.join("\n"), "Questions");
+    }
+    else if (act === "rate") {
+      var st = catState(), i = b.getAttribute("data-i"), cc = b.getAttribute("data-c");
+      var order = ["", "S", "L", "G", "N"], cur = (st.ratings[i] || {})[cc] || "";
+      st.ratings[i] = st.ratings[i] || {};
+      st.ratings[i][cc] = order[(order.indexOf(cur) + 1) % order.length];
+      saveCat(st); rerender("dec-focus", b);
+    }
+    else if (act === "add-country") {
+      var code = ($("#new-cc").value || "").trim().toUpperCase();
+      if (!/^[A-Z]{2,3}$/.test(code)) { toast("Use a two-letter ISO code, for example DE."); return; }
+      var st2 = catState();
+      if (st2.countries.some(function (x) { return x.code === code; })) { toast(code + " is already in the table."); return; }
+      if (st2.example) st2 = { countries: [], ratings: {} };
+      st2.countries.push({ code: code, wave: $("#new-wave").value });
+      saveCat(st2); rerender();
+    }
+    else if (act === "del-country") {
+      var st3 = catState(), dc = b.getAttribute("data-c");
+      st3.countries = st3.countries.filter(function (x) { return x.code !== dc; });
+      Object.keys(st3.ratings).forEach(function (k) { delete st3.ratings[k][dc]; });
+      saveCat(st3); rerender();
+    }
+    else if (act === "clear-cat") { var st4 = catState(); st4.ratings = {}; saveCat(st4); rerender(); toast("Ratings cleared. Countries kept."); }
+    else if (act === "example-cat") { store.set("catalogue", exampleState()); rerender(); }
+    else if (act === "copy-cat") {
+      var st5 = catState();
+      var rows = [["Area", "Process", "Step"].concat(st5.countries.map(function (x) { return x.code + " (" + x.wave + ")"; })).concat(["Result"])];
+      C.catalogue.processes.forEach(function (p, i) {
+        rows.push(p.concat(st5.countries.map(function (x) { return (st5.ratings[i] || {})[x.code] || ""; })).concat([classify(st5.ratings[i] || {}, st5.countries).label]));
+      });
+      copy(rows.map(function (r) { return r.map(function (v) { v = String(v); return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; }).join(","); }).join("\n"), "Catalogue CSV");
+    }
+  });
+  function rerender(_, btn) {
+    var key = btn ? btn.getAttribute("data-i") + "|" + btn.getAttribute("data-c") : null;
+    var y = window.scrollY;
+    var c = chapter("catalogue");
+    $("#main").innerHTML = renderChapter(c);
+    window.scrollTo(0, y);
+    if (key) { var parts = key.split("|"); var el = document.querySelector('[data-act="rate"][data-i="' + parts[0] + '"][data-c="' + parts[1] + '"]'); if (el) el.focus(); }
+  }
+  document.addEventListener("change", function (e) {
+    var t = e.target;
+    if (t.matches('.done input[type="checkbox"]')) {
+      var all = checks(), ch = t.getAttribute("data-ch");
+      all[ch] = all[ch] || {}; all[ch][t.getAttribute("data-i")] = t.checked;
+      store.set("checks", all);
+      var p = progress(chapter(ch)); var el = document.getElementById("prog-" + ch); if (el) el.textContent = p.n + " of " + p.total + " done";
+      renderNav(ch);
+    }
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape" && $("#dlg")) $("#dlg").remove();
+    if (e.key === "Enter" && e.target.id === "new-cc") { e.preventDefault(); var b = document.querySelector('[data-act="add-country"]'); if (b) b.click(); }
+  });
+  window.addEventListener("hashchange", route);
+  route();
+  downloadsNs();
+})();
+
+</script>
+</body>
+</html>
